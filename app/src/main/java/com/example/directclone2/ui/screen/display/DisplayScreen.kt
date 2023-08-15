@@ -102,11 +102,11 @@ fun DisplayScreen(
             RadioButtonsInCardViewInCommonUi(
                 modifier = modifier,
                 onRadioClicked = {vm.update("touchSensitivity", it)},
-                currentResId = vm.uiState.touchSensitivity,
+                currentResId = vm.uiState.touchSensitivity.resIdOfTitle,
                 titleAndSubTitleRes = listOf(
-                    Pair(TouchSensitivity.Short.resIdOfTitle, TouchSensitivity.Short.resIdOfSubTitle),
-                    Pair(TouchSensitivity.Medium.resIdOfTitle, TouchSensitivity.Medium.resIdOfSubTitle),
-                    Pair(TouchSensitivity.Long.resIdOfTitle, TouchSensitivity.Long.resIdOfSubTitle)))
+                    Pair(DisplayUiState.TouchSensitivity.Short.resIdOfTitle, DisplayUiState.TouchSensitivity.Short.resIdOfSubTitle),
+                    Pair(DisplayUiState.TouchSensitivity.Medium.resIdOfTitle, DisplayUiState.TouchSensitivity.Medium.resIdOfSubTitle),
+                    Pair(DisplayUiState.TouchSensitivity.Long.resIdOfTitle, DisplayUiState.TouchSensitivity.Long.resIdOfSubTitle)))
         }
 
         CardViewInCommonUi(modifier = modifier) {
@@ -119,12 +119,12 @@ fun DisplayScreen(
             RadioButtonsInCardViewInCommonUi(
                 modifier = modifier,
                 onRadioClicked = {vm.update("systemFontSize", it)},
-                currentResId = vm.uiState.systemFontSize,
+                currentResId = vm.uiState.systemFontSize.resIdOfTitle,
                 titleAndSubTitleRes = listOf(
-                    Pair(SystemFontSize.Small.resIdOfTitle, SystemFontSize.Small.resIdOfSubTitle),
-                    Pair(SystemFontSize.Default.resIdOfTitle, SystemFontSize.Default.resIdOfSubTitle),
-                    Pair(SystemFontSize.Large.resIdOfTitle, SystemFontSize.Large.resIdOfSubTitle),
-                    Pair(SystemFontSize.Largest.resIdOfTitle, SystemFontSize.Largest.resIdOfSubTitle)))
+                    Pair(DisplayUiState.SystemFontSize.Small.resIdOfTitle, DisplayUiState.SystemFontSize.Small.resIdOfSubTitle),
+                    Pair(DisplayUiState.SystemFontSize.Default.resIdOfTitle, DisplayUiState.SystemFontSize.Default.resIdOfSubTitle),
+                    Pair(DisplayUiState.SystemFontSize.Large.resIdOfTitle, DisplayUiState.SystemFontSize.Large.resIdOfSubTitle),
+                    Pair(DisplayUiState.SystemFontSize.Largest.resIdOfTitle, DisplayUiState.SystemFontSize.Largest.resIdOfSubTitle)))
 
             CardDividerInCommonUi(modifier = modifier)
 
@@ -137,12 +137,12 @@ fun DisplayScreen(
             RadioButtonsInCardViewInCommonUi(
                 modifier = modifier,
                 onRadioClicked = {vm.update("systemDisplaySize", it)},
-                currentResId = vm.uiState.systemDisplaySize,
+                currentResId = vm.uiState.systemDisplaySize.resIdOfTitle,
                 titleAndSubTitleRes = listOf(
-                    Pair(SystemDisplaySize.Small.resIdOfTitle, SystemDisplaySize.Small.resIdOfSubTitle),
-                    Pair(SystemDisplaySize.Default.resIdOfTitle, SystemDisplaySize.Default.resIdOfSubTitle),
-                    Pair(SystemDisplaySize.Large.resIdOfTitle, SystemDisplaySize.Large.resIdOfSubTitle),
-                    Pair(SystemDisplaySize.Largest.resIdOfTitle, SystemDisplaySize.Largest.resIdOfSubTitle)))
+                    Pair(DisplayUiState.SystemDisplaySize.Small.resIdOfTitle, DisplayUiState.SystemDisplaySize.Small.resIdOfSubTitle),
+                    Pair(DisplayUiState.SystemDisplaySize.Default.resIdOfTitle, DisplayUiState.SystemDisplaySize.Default.resIdOfSubTitle),
+                    Pair(DisplayUiState.SystemDisplaySize.Large.resIdOfTitle, DisplayUiState.SystemDisplaySize.Large.resIdOfSubTitle),
+                    Pair(DisplayUiState.SystemDisplaySize.Largest.resIdOfTitle, DisplayUiState.SystemDisplaySize.Largest.resIdOfSubTitle)))
         }
     }
 }

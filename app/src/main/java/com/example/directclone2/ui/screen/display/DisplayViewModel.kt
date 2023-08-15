@@ -34,8 +34,18 @@ class DisplayViewModel (
     var uiState by mutableStateOf(DisplayUiState())
         private set
 
-    fun <T: Any> update(field: String, value: T) = viewModelScope.launch {
+    fun <T: Any> update(field: String, value: T) {
         uiState = uiState.update(field, value)
+        viewModelScope.launch {
+            repo.updateDisplay(
+                getScreenBrightnessForText().toString(),
+                uiState.autoScreenRotate,
+                uiState.adaptiveBrightness,
+                uiState.systemFontSize.name,
+                uiState.systemDisplaySize.name,
+                uiState.touchSensitivity.name,
+            )
+        }
     }
 
     fun getScreenBrightnessForText(): Int {

@@ -8,7 +8,7 @@ import kotlin.reflect.full.memberFunctions
 data class BatteryUiState(
     val batteryLowWarningLevel: Float = 0f,
     val batteryCriticalWarningLevel: Float = 0f,
-    @StringRes val smartCharging: Int = SmartCharging.NormalMode.resIdOfTitle,
+    val smartCharging: SmartCharging = SmartCharging.NormalMode,
     val isOkSmartChargingInfo: Boolean = false,
 ) {
     enum class SmartCharging (

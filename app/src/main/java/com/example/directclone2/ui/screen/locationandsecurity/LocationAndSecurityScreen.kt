@@ -85,12 +85,15 @@ fun LocationAndSecurityScreen(
                 text = "Choose Screen Lock")
             RadioButtonsWithContentsInCardViewInCommonUi(
                 modifier = modifier,
-                currentResId = vm.uiState.screenLock,
+                currentResId = vm.uiState.screenLock.resIdOfTitle,
                 onRadioClicked = vm::updateScreenLock,
                 resAndContents = arrayOf(
-                    Triple(ScreenLock.None.resIdOfTitle, ScreenLock.None.resIdOfSubTitle){},
-                    Triple(ScreenLock.Swipe.resIdOfTitle, ScreenLock.Swipe.resIdOfSubTitle){},
-                    Triple(ScreenLock.Pin.resIdOfTitle, ScreenLock.Pin.resIdOfSubTitle){
+                    Triple(LocationAndSecurityUiState.ScreenLock.None.resIdOfTitle,
+                        LocationAndSecurityUiState.ScreenLock.None.resIdOfSubTitle){},
+                    Triple(LocationAndSecurityUiState.ScreenLock.Swipe.resIdOfTitle,
+                        LocationAndSecurityUiState.ScreenLock.Swipe.resIdOfSubTitle){},
+                    Triple(LocationAndSecurityUiState.ScreenLock.Pin.resIdOfTitle,
+                        LocationAndSecurityUiState.ScreenLock.Pin.resIdOfSubTitle){
                         Row(
                             modifier = modifier
                                 .fillMaxWidth()
@@ -103,7 +106,8 @@ fun LocationAndSecurityScreen(
                             )
                         }
                     },
-                    Triple(ScreenLock.Password.resIdOfTitle, ScreenLock.Password.resIdOfSubTitle){
+                    Triple(LocationAndSecurityUiState.ScreenLock.Password.resIdOfTitle,
+                        LocationAndSecurityUiState.ScreenLock.Password.resIdOfSubTitle){
                         Row(
                             modifier = modifier
                                 .fillMaxWidth()
@@ -156,18 +160,18 @@ fun LocationAndSecurityScreen(
                 text = "Lock After Screen Timeout")
             ExposedDropdownMenuInCommonUi(
                 modifier = modifier.padding(start = 16.dp, end = 16.dp),
-                currentResId = vm.uiState.lockAfterScreenTimeout,
+                currentResId = vm.uiState.lockAfterScreenTimeout.resIdOfTitle,
                 onClickItem = {vm.update("lockAfterScreenTimeout", it)},
                 itemRes = listOf(
-                    LockAfterScreenTimeout.Immediately.resIdOfTitle,
-                    LockAfterScreenTimeout.Sec5.resIdOfTitle,
-                    LockAfterScreenTimeout.Sec15.resIdOfTitle,
-                    LockAfterScreenTimeout.Sec30.resIdOfTitle,
-                    LockAfterScreenTimeout.Min1.resIdOfTitle,
-                    LockAfterScreenTimeout.Min2.resIdOfTitle,
-                    LockAfterScreenTimeout.Min5.resIdOfTitle,
-                    LockAfterScreenTimeout.Min10.resIdOfTitle,
-                    LockAfterScreenTimeout.Min30.resIdOfTitle))
+                    LocationAndSecurityUiState.LockAfterScreenTimeout.Immediately.resIdOfTitle,
+                    LocationAndSecurityUiState.LockAfterScreenTimeout.Sec5.resIdOfTitle,
+                    LocationAndSecurityUiState.LockAfterScreenTimeout.Sec15.resIdOfTitle,
+                    LocationAndSecurityUiState.LockAfterScreenTimeout.Sec30.resIdOfTitle,
+                    LocationAndSecurityUiState.LockAfterScreenTimeout.Min1.resIdOfTitle,
+                    LocationAndSecurityUiState.LockAfterScreenTimeout.Min2.resIdOfTitle,
+                    LocationAndSecurityUiState.LockAfterScreenTimeout.Min5.resIdOfTitle,
+                    LocationAndSecurityUiState.LockAfterScreenTimeout.Min10.resIdOfTitle,
+                    LocationAndSecurityUiState.LockAfterScreenTimeout.Min30.resIdOfTitle))
             CardDividerInCommonUi(modifier.padding(top = 14.dp, bottom = 16.dp))
             Text(
                 modifier = modifier
@@ -178,11 +182,11 @@ fun LocationAndSecurityScreen(
                 text = "Power Button Instantly Locks")
             ExposedDropdownMenuInCommonUi(
                 modifier = modifier.padding(start = 16.dp, end = 16.dp, bottom = 30.dp),
-                currentResId = vm.uiState.powerButtonInstantlyLocks,
+                currentResId = vm.uiState.powerButtonInstantlyLocks.resIdOfTitle,
                 onClickItem = {vm.update("powerButtonInstantlyLocks", it)},
                 itemRes = listOf(
-                    PowerButtonInstantlyLocks.Disable.resIdOfTitle,
-                    PowerButtonInstantlyLocks.Enable.resIdOfTitle))
+                    LocationAndSecurityUiState.PowerButtonInstantlyLocks.Disable.resIdOfTitle,
+                    LocationAndSecurityUiState.PowerButtonInstantlyLocks.Enable.resIdOfTitle))
         }
 
         //여백 추가

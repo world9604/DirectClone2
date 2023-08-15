@@ -4,9 +4,9 @@ import com.google.gson.annotations.SerializedName
 
 data class LocalWireless(
     @SerializedName("bluetooth")
-    var bluetooth: String = "ON",
+    val bluetooth: String = "ON",
     @SerializedName("nfc")
-    var nfc: String = "ON",
+    val nfc: String = "ON",
     @SerializedName("gps")
     val useLocation: String = "OFF",
     @SerializedName("wlan")

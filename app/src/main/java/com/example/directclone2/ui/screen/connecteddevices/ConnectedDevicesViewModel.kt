@@ -34,7 +34,13 @@ class ConnectedDevicesViewModel (
     var uiState by mutableStateOf(ConnectedDevicesUiState())
         private set
 
-    fun <T: Any> update(field: String, value: T) = viewModelScope.launch {
+    fun <T: Any> update(field: String, value: T) {
         uiState = uiState.update(field, value)
+        viewModelScope.launch {
+            repo.updateConnectedDevices(
+                uiState.nfc,
+                uiState.bluetooth
+            )
+        }
     }
 }

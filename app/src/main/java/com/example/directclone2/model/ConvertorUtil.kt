@@ -233,23 +233,4 @@ object ConvertorUtil {
             else -> Calls.None.name
         }
     }
-
-    @StringRes
-    fun smartChargingNameToRes(value: String): Int {
-        return when (value) {
-            SmartCharging.LifeXMode.name -> SmartCharging.LifeXMode.resIdOfTitle
-            SmartCharging.NormalMode.name -> SmartCharging.NormalMode.resIdOfTitle
-            SmartCharging.FastChargingMode.name -> SmartCharging.FastChargingMode.resIdOfTitle
-            else -> SmartCharging.NormalMode.resIdOfTitle
-        }
-    }
-
-    fun smartChargingResToName(@StringRes value: Int): String {
-        return when (value) {
-            SmartCharging.LifeXMode.resIdOfTitle -> SmartCharging.LifeXMode.name
-            SmartCharging.NormalMode.resIdOfTitle -> SmartCharging.NormalMode.name
-            SmartCharging.FastChargingMode.resIdOfTitle -> SmartCharging.FastChargingMode.name
-            else -> SmartCharging.NormalMode.name
-        }
-    }
 }

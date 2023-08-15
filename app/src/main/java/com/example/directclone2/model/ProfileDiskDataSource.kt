@@ -13,13 +13,9 @@ import java.io.FileNotFoundException
 
 
 class ProfileDiskDataSource(private val jsonFile: File) {
-
     companion object {
         const val TAG = "ProfileDao"
     }
-
-    private val accessMutex = Mutex()
-    private var profile = LocalProfile()
 
     fun observeAll(): Flow<LocalBattery> = flow {
         val profile = getProfileFromFile()
@@ -41,39 +37,7 @@ class ProfileDiskDataSource(private val jsonFile: File) {
         jsonFile.writeText(Gson().toJson(profile))
     }
 
-    suspend fun upsertBattery(smartCharging: String, batteryLowWarningLevel: String,
-                      batteryCriticalWarningLevel: String) = accessMutex.withLock {
-        profile = getProfileFromFile()
-        profile.localBattery.batteryCriticalWarningLevel = batteryCriticalWarningLevel
-        profile.localBattery.batteryLowWarningLevel = batteryLowWarningLevel
-        jsonFile.writeText(Gson().toJson(profile))
-    }
-
-    fun upsert(localBattery: LocalBattery) {
-        val batteryJson = Gson().toJson(localBattery)
-        Log.d(TAG, "battery in ProfileDiskDataSource.setProfile() : ${batteryJson}")
-        val profile = getProfileFromFile()
-        profile.localBattery = localBattery
-        jsonFile.writeText(batteryJson)
-    }
-
-    /*
-    fun updateBluetooth(value: String) {
-        val profile = getProfileFromFile()
-        profile.bluetooth = value
-        Log.d(TAG, "Profile in ProfileDao.getProfile() : $profile")
-        jsonFile.writeText(Gson().toJson(profile))
-    }
-
-    fun updateNfc(value: String) {
-        val profile = getProfileFromFile()
-        profile.nfc = value
-        Log.d(TAG, "Profile in ProfileDao.getProfile() : $profile")
-        jsonFile.writeText(Gson().toJson(profile))
-    }
-
     fun delete() {
         jsonFile?.let { delete() }
     }
-     */
 }

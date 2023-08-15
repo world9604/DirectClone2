@@ -37,7 +37,10 @@ class BatteryViewModel (
     fun <T: Any> update(field: String, value: T) {
         uiState = uiState.update(field, value)
         viewModelScope.launch {
-            repo.update(uiState)
+            repo.updateBattery(
+                uiState.smartCharging.name,
+                getBatteryLowWarningLevelForText().toString(),
+                getBatteryCriticalWarningLevelForText().toString())
         }
     }
 

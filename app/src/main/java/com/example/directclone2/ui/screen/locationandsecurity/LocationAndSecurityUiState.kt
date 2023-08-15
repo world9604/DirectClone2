@@ -8,12 +8,12 @@ import kotlin.reflect.full.memberFunctions
 data class LocationAndSecurityUiState(
     val useLocation: Boolean = false,
     val currentScreenLockPinOrPassword: String = "",
-    @StringRes val screenLock: Int = ScreenLock.None.resIdOfTitle,
+    val screenLock: ScreenLock = ScreenLock.None,
     val screenLockPin: String = "",
     val screenLockPassword: String = "",
     val screenLockMessage: String = "",
-    @StringRes val lockAfterScreenTimeout: Int = LockAfterScreenTimeout.Immediately.resIdOfTitle,
-    @StringRes val powerButtonInstantlyLocks: Int = PowerButtonInstantlyLocks.Disable.resIdOfTitle,
+    val lockAfterScreenTimeout: LockAfterScreenTimeout = LockAfterScreenTimeout.Immediately,
+    val powerButtonInstantlyLocks: PowerButtonInstantlyLocks = PowerButtonInstantlyLocks.Disable,
 ) {
     enum class PowerButtonInstantlyLocks (
         @StringRes val resIdOfTitle: Int,

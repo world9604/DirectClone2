@@ -3,6 +3,7 @@ package com.example.directclone2.ui.screen.locationandsecurity
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -34,17 +35,40 @@ class LocationAndSecurityViewModel (
     var uiState by mutableStateOf(LocationAndSecurityUiState())
         private set
 
-    fun <T: Any> update(field: String, value: T) = viewModelScope.launch {
+    fun <T: Any> update(field: String, value: T) {
         uiState = uiState.update(field, value)
+        viewModelScope.launch {
+            repo.updateScreenLock(
+                uiState.useLocation,
+                uiState.currentScreenLockPinOrPassword,
+                uiState.screenLock.name,
+                uiState.screenLockPin.ifEmpty { uiState.screenLockPassword },
+                uiState.screenLockMessage,
+                uiState.lockAfterScreenTimeout.name,
+                uiState.powerButtonInstantlyLocks.name
+            )
+        }
     }
 
     fun updateScreenLock(value: Int) = viewModelScope.launch {
-        var tmp = uiState.copy(screenLock = value)
         uiState = when (value) {
-            ScreenLock.None.resIdOfTitle or ScreenLock.Swipe.resIdOfTitle -> tmp.copy(screenLockPin = "", screenLockPassword = "")
-            ScreenLock.Pin.resIdOfTitle -> tmp.copy(screenLockPassword = "")
-            ScreenLock.Password.resIdOfTitle -> tmp.copy(screenLockPin = "")
-            else -> tmp
+            LocationAndSecurityUiState.ScreenLock.None.resIdOfTitle -> {
+                uiState.copy(screenLock = LocationAndSecurityUiState.ScreenLock.None,
+                        screenLockPin = "", screenLockPassword = "")
+            }
+            LocationAndSecurityUiState.ScreenLock.Swipe.resIdOfTitle -> {
+                uiState.copy(screenLock = LocationAndSecurityUiState.ScreenLock.Swipe,
+                    screenLockPin = "", screenLockPassword = "")
+            }
+            LocationAndSecurityUiState.ScreenLock.Pin.resIdOfTitle -> {
+                uiState.copy(screenLock = LocationAndSecurityUiState.ScreenLock.Pin,
+                    screenLockPassword = "")
+            }
+            LocationAndSecurityUiState.ScreenLock.Password.resIdOfTitle -> {
+                uiState.copy(screenLock = LocationAndSecurityUiState.ScreenLock.Password,
+                    screenLockPin = "")
+            }
+            else -> uiState
         }
     }
 }

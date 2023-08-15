@@ -9,9 +9,9 @@ data class DisplayUiState(
     val screenBrightness: Float = 0f,
     val autoScreenRotate: Boolean = false,
     val adaptiveBrightness: Boolean = false,
-    @StringRes val systemFontSize: Int = SystemFontSize.Default.resIdOfTitle,
-    @StringRes val systemDisplaySize: Int = SystemDisplaySize.Default.resIdOfTitle,
-    @StringRes val touchSensitivity: Int = TouchSensitivity.Short.resIdOfTitle,
+    val systemFontSize: SystemFontSize = SystemFontSize.Default,
+    val systemDisplaySize: SystemDisplaySize = SystemDisplaySize.Default,
+    val touchSensitivity: TouchSensitivity = TouchSensitivity.Short,
 ) {
     enum class TouchSensitivity (
         @StringRes val resIdOfTitle: Int,

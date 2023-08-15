@@ -218,7 +218,7 @@ fun BatteryScreen(
             }
             RadioButtonsInCardViewInCommonUi(
                 modifier = modifier,
-                currentResId = vm.uiState.smartCharging,
+                currentResId = vm.uiState.smartCharging.resIdOfTitle,
                 onRadioClicked = {vm.update("smartCharging", it)},
                 titleAndSubTitleRes = listOf(
                     Pair(BatteryUiState.SmartCharging.LifeXMode.resIdOfTitle, BatteryUiState.SmartCharging.LifeXMode.resIdOfSubTitle),

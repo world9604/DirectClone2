@@ -36,5 +36,10 @@ class NetworkAndInternetViewModel (
 
     fun <T: Any> update(field: String, value: T) = viewModelScope.launch {
         uiState = uiState.update(field, value)
+        viewModelScope.launch {
+            repo.updateNetworkAndInternet(
+
+            )
+        }
     }
 }
