@@ -1,15 +1,15 @@
 package com.example.directclone2.model
 
 import androidx.annotation.StringRes
-import com.example.directclone2.viewmodel.Calls
-import com.example.directclone2.viewmodel.Conversations
-import com.example.directclone2.viewmodel.LockAfterScreenTimeout
-import com.example.directclone2.viewmodel.Messages
-import com.example.directclone2.viewmodel.SmartCharging
-import com.example.directclone2.viewmodel.SystemDisplaySize
-import com.example.directclone2.viewmodel.SystemFontSize
-import com.example.directclone2.viewmodel.TouchSensitivity
-import com.example.directclone2.viewmodel.VibrateOnTouch
+import com.example.directclone2.ui.screen.sound.Calls
+import com.example.directclone2.ui.screen.sound.Conversations
+import com.example.directclone2.ui.screen.locationandsecurity.LockAfterScreenTimeout
+import com.example.directclone2.ui.screen.sound.Messages
+import com.example.directclone2.ui.screen.battery.SmartCharging
+import com.example.directclone2.ui.screen.display.SystemDisplaySize
+import com.example.directclone2.ui.screen.display.SystemFontSize
+import com.example.directclone2.ui.screen.display.TouchSensitivity
+import com.example.directclone2.ui.screen.sound.VibrateOnTouch
 
 object ConvertorUtil {
     private const val KEEP_OPTION_STR = "Keep Current Option"

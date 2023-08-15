@@ -1,6 +1,7 @@
 package com.example.directclone2.model
 
 import android.util.Log
+import com.example.directclone2.model.data.LocalBattery
 import com.example.directclone2.model.data.LocalProfile
 import com.google.gson.Gson
 import kotlinx.coroutines.flow.Flow
@@ -15,10 +16,10 @@ class ProfileDiskDataSource(private val jsonFile: File) {
         const val TAG = "ProfileDao"
     }
 
-    fun getProfile(): Flow<LocalProfile> = flow {
+    fun observeAll(): Flow<LocalBattery> = flow {
         val profile = getProfileFromFile()
-        Log.d(TAG, "Profile in ProfileDao.getProfile() : $profile")
-        emit(profile)
+        Log.d(TAG, "Profile in ProfileDiskDataSource.getProfile() : $profile")
+        emit(profile.localBattery)
     }
 
     private fun getProfileFromFile(): LocalProfile {
@@ -30,11 +31,20 @@ class ProfileDiskDataSource(private val jsonFile: File) {
         }
     }
 
-    fun setProfile(profile: LocalProfile) {
-        Log.d(TAG, "Profile in ProfileDao.setProfile() : ${Gson().toJson(profile)}")
+    fun upsert(profile: LocalProfile) {
+        Log.d(TAG, "Profile in ProfileDiskDataSource.setProfile() : ${Gson().toJson(profile)}")
         jsonFile.writeText(Gson().toJson(profile))
     }
 
+    fun upsert(localBattery: LocalBattery) {
+        val batteryJson = Gson().toJson(localBattery)
+        Log.d(TAG, "battery in ProfileDiskDataSource.setProfile() : ${batteryJson}")
+        val profile = getProfileFromFile()
+        profile.localBattery = localBattery
+        jsonFile.writeText(batteryJson)
+    }
+
+    /*
     fun updateBluetooth(value: String) {
         val profile = getProfileFromFile()
         profile.bluetooth = value
@@ -52,4 +62,5 @@ class ProfileDiskDataSource(private val jsonFile: File) {
     fun delete() {
         jsonFile?.let { delete() }
     }
+     */
 }

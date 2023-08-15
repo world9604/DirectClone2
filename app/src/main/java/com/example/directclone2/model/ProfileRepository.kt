@@ -1,52 +1,42 @@
 package com.example.directclone2.model
 
-import com.example.directclone2.model.data.toExternal
+import androidx.compose.ui.res.stringResource
+import androidx.lifecycle.viewmodel.CreationExtras
+import com.example.directclone2.model.data.LocalBattery
+import com.example.directclone2.model.data.LocalProfile
+import com.example.directclone2.model.data.LocalSystem
 import com.example.directclone2.model.data.toLocal
-import com.example.directclone2.viewmodel.ProfileUiState
+import com.example.directclone2.model.data.toExternal
+import com.example.directclone2.ui.screen.battery.BatteryUiState
+import com.example.directclone2.ui.screen.connecteddevices.ConnectedDevicesUiState
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import java.util.UUID
+import kotlinx.coroutines.withContext
 
 @ExperimentalCoroutinesApi
 @FlowPreview
 class ProfileRepository (
     private val localDataSource: ProfileDiskDataSource,
-    //private val dispatcher: CoroutineDispatcher,
+    private val dispatcher: CoroutineDispatcher = Dispatchers.Default,
     //private val scope: CoroutineScope,
 ) {
-    fun observeAll() : Flow<ProfileUiState> {
-        return localDataSource.getProfile().map {
+    val localProfile = LocalProfile()
+
+    fun observeAll() : Flow<BatteryUiState> {
+        return localDataSource.observeAll().map {
             it.toExternal()
         }
     }
 
-    fun updateBluetooth(bluetooth: Boolean) {
-        localDataSource.updateBluetooth(
-            ConvertorUtil.booleanToOnOrOff(bluetooth))
+    suspend fun update(smartCharging: String, batteryLowWarningLevel: String,
+                       batteryCriticalWarningLevel: String) {
+        withContext(dispatcher) {
+            localDataSource.upsert(smartCharging, batteryLowWarningLevel,
+                batteryCriticalWarningLevel)
+        }
     }
-
-    fun updateNfc(nfc: Boolean) {
-        localDataSource.updateNfc(
-            ConvertorUtil.booleanToOnOrOff(nfc))
-    }
-
-    suspend fun create(profileUiState: ProfileUiState) {
-        localDataSource.setProfile(profileUiState.toLocal())
-    }
-
-    private fun createTaskId() : String {
-        return UUID.randomUUID().toString()
-    }
-
-    /*
-    suspend fun setProfile(key: String, value: String) {
-        val localProfile = localDataSource.getProfile().first()
-        val profile = localProfile.update(key, value)
-        localDataSource.setProfile(profile)
-    }
-     */
-
-    fun delete() = localDataSource.delete()
 }
