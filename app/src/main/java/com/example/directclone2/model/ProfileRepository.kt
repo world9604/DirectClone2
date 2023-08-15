@@ -35,7 +35,7 @@ class ProfileRepository (
     suspend fun update(smartCharging: String, batteryLowWarningLevel: String,
                        batteryCriticalWarningLevel: String) {
         withContext(dispatcher) {
-            localDataSource.upsert(smartCharging, batteryLowWarningLevel,
+            localDataSource.upsertBattery(smartCharging, batteryLowWarningLevel,
                 batteryCriticalWarningLevel)
         }
     }
