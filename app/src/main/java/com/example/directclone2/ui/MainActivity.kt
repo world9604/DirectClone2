@@ -20,7 +20,6 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         lifecycleScope.launch {
             val permissionResult = TedPermission.create().setPermissions(
                         Manifest.permission.WRITE_EXTERNAL_STORAGE,
@@ -28,7 +27,8 @@ class MainActivity : ComponentActivity() {
 
             if (permissionResult.isGranted) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                    if (!Environment.isExternalStorageManager()) requestManageAllFilesAccessPermission() else viewUI()
+                    if (!Environment.isExternalStorageManager()) requestManageAllFilesAccessPermission()
+                    else viewUI()
                 }
             } else {
                 Toast.makeText(applicationContext, "Is Not Granted!!", Toast.LENGTH_LONG).show()
@@ -41,8 +41,9 @@ class MainActivity : ComponentActivity() {
         resultLauncher.launch(intent)
     }
 
-    private var resultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-        viewUI()
+    private var resultLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result -> viewUI()
         /*
         if (result.resultCode == Activity.RESULT_OK) {
             Toast.makeText(applicationContext, "Activity.RESULT_OK!!", Toast.LENGTH_LONG).show()

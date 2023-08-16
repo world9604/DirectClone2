@@ -1,14 +1,10 @@
 package com.example.directclone2.model
 
 import com.example.directclone2.model.data.LocalProfile
-import com.example.directclone2.model.data.toExternal
-import com.example.directclone2.ui.screen.battery.BatteryUiState
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
@@ -23,11 +19,17 @@ class ProfileRepository (
     private val accessMutex = Mutex()
     private var profile = LocalProfile()
 
+    /*
     fun observeAll() : Flow<BatteryUiState> {
         return localDataSource.observeAll().map {
             it.toExternal()
         }
     }
+     */
+
+    private fun Boolean.toEnableOrDisable(): String = if (this) "Enable" else "Disable"
+
+    private fun Boolean.toOnOrOff(): String = if (this) "ON" else "OFF"
 
     suspend fun updateBattery(smartCharging: String, batteryLowWarningLevel: String,
                        batteryCriticalWarningLevel: String) = accessMutex.withLock {
@@ -40,7 +42,6 @@ class ProfileRepository (
                 smartCharging = smartCharging
             )
             profile = profile.copy(localBattery = battery, localSystem = system)
-            localDataSource.upsert(profile)
         }
     }
 
@@ -51,7 +52,6 @@ class ProfileRepository (
                 bluetooth = bluetooth.toOnOrOff()
             )
             profile = profile.copy(localWireless = wireless)
-            localDataSource.upsert(profile)
         }
     }
 
@@ -68,7 +68,6 @@ class ProfileRepository (
                 touchSensitivity = touchSensitivity,
             )
             profile = profile.copy(localSystem = system)
-            localDataSource.upsert(profile)
         }
     }
 
@@ -89,9 +88,93 @@ class ProfileRepository (
             )
             profile = profile.copy(localWireless = localWireless,
                 localScreenLock = localScreenLock)
+        }
+    }
+
+    suspend fun updateNetworkAndInternet(wifi: Boolean, dataServer: Boolean,
+                                         roaming: Boolean, ethernet: String, vpn: String)
+    = accessMutex.withLock {
+        withContext(dispatcher) {
+            val wireless = profile.localWireless.copy(
+                wifi = wifi.toOnOrOff(),
+                dataServer = dataServer.toOnOrOff(),
+                roaming = roaming.toOnOrOff(),
+                vpn = vpn
+            )
+            profile = profile.copy(localWireless = wireless)
+        }
+    }
+
+    suspend fun updateSound(
+        vibrateOnTouch: String,
+        conversations: String,
+        messages: String,
+        calls: String,
+        musicVolume: String,
+        ringVolume: String,
+        callVolume: String,
+        notificationVolume: String,
+        alarmVolume: String,
+        alarms: Boolean,
+        mediaSounds: Boolean,
+        touchSounds: Boolean,
+        reminders: Boolean,
+        calendarEvents: Boolean,
+        dialPadTones: Boolean,
+        screenLockingSounds: Boolean,
+        chargingSoundsAndVibration: Boolean,
+        advancedTouchSounds: Boolean,
+        touchVibration: Boolean
+    ) = accessMutex.withLock {
+        withContext(dispatcher) {
+            val system = profile.localSystem.copy(
+                vibrateOnTouch = vibrateOnTouch,
+                musicVolume = musicVolume,
+                ringVolume = ringVolume,
+                callVolume = callVolume,
+                notificationVolume = notificationVolume,
+                alarmVolume = alarmVolume,
+            )
+            profile = profile.copy(localSystem = system)
+        }
+    }
+
+    suspend fun updateSystem(
+        languages: String,
+        spellChecker: Boolean,
+        spellCheckLanguage: String,
+        defaultSpellChecker: String,
+        useNetworkProvidedTime: Boolean,
+        systemDate: String,
+        systemTime: String,
+        useNetworkProvidedTimeZone: Boolean,
+        timeZone: String,
+        use24hourFormat: Boolean,
+        ntpServer: String
+    ) = accessMutex.withLock {
+        withContext(dispatcher) {
+            val system = profile.localSystem.copy(
+                languages = languages,
+                spellChecker = spellChecker,
+                spellCheckLanguage = spellCheckLanguage,
+                defaultSpellChecker = defaultSpellChecker,
+                ntpServer = ntpServer
+            )
+            val date = profile.localDateTime.copy(
+                useNetworkProvidedTime = useNetworkProvidedTime.toOnOrOff(),
+                systemDate = systemDate,
+                systemTime = systemTime,
+                useNetworkProvidedTimeZone = useNetworkProvidedTimeZone.toOnOrOff(),
+                timeZone = timeZone,
+                use24hourFormat = use24hourFormat.toOnOrOff()
+            )
+            profile = profile.copy(localSystem = system, localDateTime = date)
+        }
+    }
+
+    suspend fun create() {
+        withContext(dispatcher) {
             localDataSource.upsert(profile)
         }
     }
-    private fun Boolean.toEnableOrDisable(): String = if (this) "Enable" else "Disable"
-    private fun Boolean.toOnOrOff(): String = if (this) "ON" else "OFF"
 }

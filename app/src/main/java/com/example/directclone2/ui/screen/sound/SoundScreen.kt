@@ -124,14 +124,14 @@ fun SoundScreen(
             RadioButtonsInCardViewInCommonUi(
                 modifier = modifier,
                 onRadioClicked = {vm.update("vibrateOnTouch", it)},
-                currentResId = vm.uiState.vibrateOnTouch,
+                currentResId = vm.uiState.vibrateOnTouch.resIdOfTitle,
                 titleAndSubTitleRes = listOf(
                     Pair(
-                        VibrateOnTouch.Enable.resIdOfTitle,
-                        VibrateOnTouch.Enable.resIdOfSubTitle),
+                        SoundUiState.VibrateOnTouch.Enable.resIdOfTitle,
+                        SoundUiState.VibrateOnTouch.Enable.resIdOfSubTitle),
                     Pair(
-                        VibrateOnTouch.Disable.resIdOfTitle,
-                        VibrateOnTouch.Disable.resIdOfSubTitle)))
+                        SoundUiState.VibrateOnTouch.Disable.resIdOfTitle,
+                        SoundUiState.VibrateOnTouch.Disable.resIdOfSubTitle)))
         }
 
         Text(
@@ -159,11 +159,11 @@ fun SoundScreen(
                 text = "Conversations that can interrupt")
             RadioButtonsInCardViewInCommonUi(
                 onRadioClicked = {vm.update("conversations", it)},
-                currentResId = vm.uiState.conversations,
+                currentResId = vm.uiState.conversations.resIdOfTitle,
                 titleAndSubTitleRes = listOf(
-                    Pair(Conversations.AllConversations.resIdOfTitle, Conversations.AllConversations.resIdOfSubTitle),
-                    Pair(Conversations.PriorityConversations.resIdOfTitle, Conversations.PriorityConversations.resIdOfSubTitle),
-                    Pair(Conversations.None.resIdOfTitle, Conversations.None.resIdOfSubTitle),
+                    Pair(SoundUiState.Conversations.AllConversations.resIdOfTitle, SoundUiState.Conversations.AllConversations.resIdOfSubTitle),
+                    Pair(SoundUiState.Conversations.PriorityConversations.resIdOfTitle, SoundUiState.Conversations.PriorityConversations.resIdOfSubTitle),
+                    Pair(SoundUiState.Conversations.None.resIdOfTitle, SoundUiState.Conversations.None.resIdOfSubTitle),
                 ))
             CardDividerInCommonUi(modifier)
             Text(
@@ -177,13 +177,13 @@ fun SoundScreen(
                 color = MaterialTheme.colorScheme.primary,
                 text = "Calls that can interrupt")
             RadioButtonsInCardViewInCommonUi(
-                currentResId = vm.uiState.calls,
+                currentResId = vm.uiState.calls.resIdOfTitle,
                 onRadioClicked = {vm.update("calls", it)},
                 titleAndSubTitleRes = listOf(
-                    Pair(Calls.StarredContacts.resIdOfTitle, Calls.StarredContacts.resIdOfSubTitle),
-                    Pair(Calls.Contacts.resIdOfTitle, Calls.Contacts.resIdOfSubTitle),
-                    Pair(Calls.Anyone.resIdOfTitle, Calls.Anyone.resIdOfSubTitle),
-                    Pair(Calls.None.resIdOfTitle, Calls.None.resIdOfSubTitle),
+                    Pair(SoundUiState.Calls.StarredContacts.resIdOfTitle, SoundUiState.Calls.StarredContacts.resIdOfSubTitle),
+                    Pair(SoundUiState.Calls.Contacts.resIdOfTitle, SoundUiState.Calls.Contacts.resIdOfSubTitle),
+                    Pair(SoundUiState.Calls.Anyone.resIdOfTitle, SoundUiState.Calls.Anyone.resIdOfSubTitle),
+                    Pair(SoundUiState.Calls.None.resIdOfTitle, SoundUiState.Calls.None.resIdOfSubTitle),
                 ))
             CardDividerInCommonUi(modifier)
             Text(
@@ -197,13 +197,13 @@ fun SoundScreen(
                 color = MaterialTheme.colorScheme.primary,
                 text = "Messages that can interrupt")
             RadioButtonsInCardViewInCommonUi(
-                currentResId = vm.uiState.messages,
+                currentResId = vm.uiState.messages.resIdOfTitle,
                 onRadioClicked = {vm.update("messages", it)},
                 titleAndSubTitleRes = listOf(
-                    Pair(Messages.StarredContacts.resIdOfTitle, Messages.StarredContacts.resIdOfSubTitle),
-                    Pair(Messages.Contacts.resIdOfTitle, Messages.Contacts.resIdOfSubTitle),
-                    Pair(Messages.Anyone.resIdOfTitle, Messages.Anyone.resIdOfSubTitle),
-                    Pair(Messages.None.resIdOfTitle, Messages.None.resIdOfSubTitle),
+                    Pair(SoundUiState.Messages.StarredContacts.resIdOfTitle, SoundUiState.Messages.StarredContacts.resIdOfSubTitle),
+                    Pair(SoundUiState.Messages.Contacts.resIdOfTitle, SoundUiState.Messages.Contacts.resIdOfSubTitle),
+                    Pair(SoundUiState.Messages.Anyone.resIdOfTitle, SoundUiState.Messages.Anyone.resIdOfSubTitle),
+                    Pair(SoundUiState.Messages.None.resIdOfTitle, SoundUiState.Messages.None.resIdOfSubTitle),
                 ))
         }
 

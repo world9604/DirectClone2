@@ -10,7 +10,7 @@ data class SystemUiState(
     val languages: String = "",
     val spellChecker: Boolean = false,
     val spellCheckLanguage: String = "when an unknown printer",
-    @StringRes val defaultSpellChecker: Int = DefaultSpellChecker.GboardSpellChecker.resIdOfTitle,
+    val defaultSpellChecker: DefaultSpellChecker = DefaultSpellChecker.GboardSpellChecker,
     val spellCheckPointerSpeed: Float = 0f,
     val useNetworkProvidedTime: Boolean = false,
     val openDatePickerDialog: Boolean = false,

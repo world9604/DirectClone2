@@ -44,21 +44,17 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.directclone2.R
-import com.example.directclone2.model.ProfileDiskDataSource
-import com.example.directclone2.model.ProfileRepository
-import com.example.directclone2.ui.AppItem
 import com.example.directclone2.ui.components.ButtonInCommonUi
 import com.example.directclone2.ui.components.CardDividerInCommonUi
 import com.example.directclone2.ui.components.CardViewInCommonUi
 import com.example.directclone2.ui.components.CheckBoxInCommonUi
 import com.example.directclone2.ui.components.OutlinedTextFieldInCommonUi
-import java.io.File
 import java.util.Locale
 
 @Composable
 fun BackupContent(
     modifier: Modifier = Modifier,
-    vm: SettingViewModel = viewModel(),
+    vm: MainViewModel = viewModel(factory = MainViewModel.Factory),
     onAppClicked: () -> Unit = {}
 ) {
     Column(
@@ -109,7 +105,7 @@ fun BackupContent(
 }
 
 @Composable
-private fun BackupResultDialog(vm: SettingViewModel) {
+private fun BackupResultDialog(vm: MainViewModel) {
     Dialog(onDismissRequest = {}) {
         Box(
             Modifier.background(
@@ -172,7 +168,7 @@ private fun BackupResultDialog(vm: SettingViewModel) {
 }
 
 @Composable
-private fun SetPasswordDialog(vm: SettingViewModel) {
+private fun SetPasswordDialog(vm: MainViewModel) {
     Dialog(onDismissRequest = {}) {
         Box(
             Modifier.background(
@@ -240,7 +236,7 @@ private fun SetPasswordDialog(vm: SettingViewModel) {
 }
 
 @Composable
-private fun BackupDialog(vm: SettingViewModel) {
+private fun BackupDialog(vm: MainViewModel) {
     Dialog(onDismissRequest = {}) {
         Box(
             Modifier.background(
@@ -405,7 +401,7 @@ private fun AppsForBackupList(
     onClick: () -> Unit,
     apps: List<AppItem>,
     clicked: Boolean = true,
-    vm: SettingViewModel,
+    vm: MainViewModel,
     onAppClicked: () -> Unit = {},
 )  {
     AppsForBackupToggleCard(title, subTitle, clicked, onClick)
@@ -426,7 +422,7 @@ private fun AppsForBackupList(
 @Composable
 fun AppsForBackupItem(
     app: AppItem,
-    vm: SettingViewModel,
+    vm: MainViewModel,
     onAppClicked: () -> Unit = {},
 ) {
     Row(
@@ -507,7 +503,5 @@ private fun AppsForBackupToggleCard(
 @Preview(group = "Work", heightDp = 800, showBackground = true)
 @Composable
 fun BackupContentPreview() {
-    BackupContent(vm = SettingViewModel(
-        ProfileRepository(ProfileDiskDataSource(File("/storage/emulated/0/Profile.json")))
-    ))
+    BackupContent()
 }

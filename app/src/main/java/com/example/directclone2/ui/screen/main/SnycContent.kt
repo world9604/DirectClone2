@@ -28,7 +28,7 @@ import java.util.Locale
 @Composable
 fun SyncContent(
     modifier: Modifier = Modifier,
-    vm: SettingViewModel = viewModel(),
+    vm: MainViewModel = viewModel(factory = MainViewModel.Factory),
     onAppClicked: () -> Unit = {}
 ) {
     Column(
@@ -83,7 +83,5 @@ fun SyncContent(
 @Preview(group="Test", heightDp = 800, showBackground = true)
 @Composable
 fun SyncPreview() {
-    SyncContent(vm = SettingViewModel(
-        ProfileRepository(ProfileDiskDataSource(File("/storage/emulated/0/Profile.json")))
-    ))
+    SyncContent()
 }

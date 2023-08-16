@@ -60,7 +60,7 @@ fun NetworkAndInternetScreen(
                     color = MaterialTheme.colorScheme.onSurface,
                     text = "Data Server")
                 ToggleSwitchInCommonUi(
-                    checked = vm.uiState.dataSaver,
+                    checked = vm.uiState.dataServer,
                     onCheckedChange = {vm.update("dataSaver", it)}
                 )
             }

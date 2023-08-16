@@ -6,7 +6,7 @@ import kotlin.reflect.full.memberFunctions
 data class NetworkAndInternetUiState(
     val wifi: Boolean = false,
     val savedNetworks: List<String> = listOf(""),
-    val dataSaver: Boolean = false,
+    val dataServer: Boolean = false,
     val roaming: Boolean = false,
     val ethernet: String = "",
     val vpn: String = "",

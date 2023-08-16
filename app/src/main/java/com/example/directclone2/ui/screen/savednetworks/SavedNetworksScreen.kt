@@ -1,4 +1,4 @@
-package com.example.directclone2.ui.screen
+package com.example.directclone2.ui.screen.savednetworks
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -18,18 +18,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.directclone2.model.ProfileDiskDataSource
-import com.example.directclone2.model.ProfileRepository
 import com.example.directclone2.ui.components.CardViewInCommonUi
-import java.io.File
 import java.util.Locale
 
 
 @Composable
 fun SavedNetworksScreen(
     modifier: Modifier = Modifier,
-    vm: SettingViewModel = viewModel(),
 ) {
     var wifis = listOf("", "", "", "")
 
@@ -70,9 +65,5 @@ fun SavedNetworksScreen(
 @Preview(group="Test", showBackground = true)
 @Composable
 fun SavedNetworksPreview() {
-    SavedNetworksScreen(
-        vm = SettingViewModel(
-            ProfileRepository(ProfileDiskDataSource(File("/storage/emulated/0/Profile.json")))
-        )
-    )
+    SavedNetworksScreen()
 }

@@ -82,17 +82,17 @@ import androidx.compose.material3.TimePickerLayoutType
 import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
-import com.example.directclone2.ui.AppNavigation
+import com.example.directclone2.ui.screen.main.MainUiState.SettingsRes
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AppBar(
-    currentScreen: AppNavigation,
+    currentScreen: SettingsRes,
     onBackButtonClicked: () -> Unit = {}
 ) {
     TopAppBar(
         navigationIcon = {
-            if (currentScreen == AppNavigation.Backup || currentScreen == AppNavigation.Sync) {
+            if (currentScreen == SettingsRes.Backup || currentScreen == SettingsRes.Sync) {
                 Image(
                     modifier = Modifier.padding(start = 16.dp, top = 8.dp, bottom = 8.dp),
                     painter = painterResource(R.drawable.icon_direct_clone),
@@ -112,7 +112,7 @@ fun AppBar(
             text = stringResource(currentScreen.title)
         ) },
         actions = {
-            if (currentScreen == AppNavigation.Backup || currentScreen == AppNavigation.Sync) {
+            if (currentScreen == SettingsRes.Backup || currentScreen == SettingsRes.Sync) {
                 IconButton(onClick = {}) {
                     Icon(
                         imageVector = Icons.Default.Refresh,
@@ -138,8 +138,8 @@ fun AppBar(
 @Composable
 fun AppBarPreview() {
     Column() {
-        AppBar(currentScreen = AppNavigation.ConnectedDevices)
-        AppBar(currentScreen = AppNavigation.Backup)
+        AppBar(currentScreen = SettingsRes.ConnectedDevices)
+        AppBar(currentScreen = SettingsRes.Backup)
     }
 }
 

@@ -16,7 +16,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import java.util.Locale
 
 @Composable
-fun Tabs(vm: SettingViewModel) {
+fun Tabs(vm: MainViewModel) {
     TabRow(
         modifier = Modifier
             .padding(horizontal = 16.dp)

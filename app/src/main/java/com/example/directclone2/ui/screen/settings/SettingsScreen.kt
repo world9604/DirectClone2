@@ -1,5 +1,6 @@
-package com.example.directclone2.ui.screen
+package com.example.directclone2.ui.screen.settings
 
+import androidx.annotation.StringRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -17,52 +18,42 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.directclone2.model.ProfileDiskDataSource
-import com.example.directclone2.model.ProfileRepository
-import com.example.directclone2.ui.AppNavigation
-import java.io.File
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
+import com.example.directclone2.ui.screen.main.MainUiState.SettingsRes
+import com.example.directclone2.ui.screen.main.MainViewModel
 
 @Composable
 fun SettingsScreen (
-    vm: SettingViewModel = viewModel(),
+    vm: MainViewModel = viewModel(factory = MainViewModel.Factory),
     modifier: Modifier = Modifier,
-    onBackupClicked: () -> Unit = {},
-    onSyncClicked: () -> Unit = {},
-    onSettingsClicked: () -> Unit = {},
-    onSoundClicked: () -> Unit = {},
-    onBatteryClicked: () -> Unit = {},
-    onLocationAndSecurityClicked: () -> Unit = {},
-    onConnectedDevicesClicked: () -> Unit = {},
-    onAppsClicked: () -> Unit = {},
-    onDisplayClicked: () -> Unit = {},
-    onSystemClicked: () -> Unit = {},
-    onNetworkAndInternetClicked: () -> Unit = {},
+    navController: NavHostController = rememberNavController()
 ) {
     Column(
         modifier = modifier.background(MaterialTheme.colorScheme.background)
     ) {
-        for ((index, item) in vm.settingItems.withIndex()) {
+        SettingsRes.values().forEachIndexed { index, item ->
             var newModifier = if (index == 0) Modifier.padding(top = 7.dp) else Modifier
-
             SettingsContent (
                 modifier = newModifier.background(MaterialTheme.colorScheme.surface),
-                name = item.first,
+                name = item.title,
                 onSettingClicked = {
-                    when(item.second) {
-                        AppNavigation.Backup -> onBackupClicked()
-                        AppNavigation.Sync -> onSyncClicked()
-                        AppNavigation.Settings -> onSettingsClicked()
-                        AppNavigation.Sound -> onSoundClicked()
-                        AppNavigation.Battery -> onBatteryClicked()
-                        AppNavigation.LocationAndSecurity -> onLocationAndSecurityClicked()
-                        AppNavigation.ConnectedDevices -> onConnectedDevicesClicked()
-                        AppNavigation.Apps -> onAppsClicked()
-                        AppNavigation.Display -> onDisplayClicked()
-                        AppNavigation.System -> onSystemClicked()
-                        AppNavigation.NetworkAndInternet -> onNetworkAndInternetClicked()
+                    when(item) {
+                        SettingsRes.Backup -> navController.navigate(SettingsRes.Backup.name)
+                        SettingsRes.Sync -> navController.navigate(SettingsRes.Sync.name)
+                        SettingsRes.Settings -> navController.navigate(SettingsRes.Settings.name)
+                        SettingsRes.Sound -> navController.navigate(SettingsRes.Sound.name)
+                        SettingsRes.Battery -> navController.navigate(SettingsRes.Battery.name)
+                        SettingsRes.LocationAndSecurity -> navController.navigate(SettingsRes.LocationAndSecurity.name)
+                        SettingsRes.ConnectedDevices -> navController.navigate(SettingsRes.ConnectedDevices.name)
+                        SettingsRes.Apps -> navController.navigate(SettingsRes.Apps.name)
+                        SettingsRes.Display -> navController.navigate(SettingsRes.Display.name)
+                        SettingsRes.System -> navController.navigate(SettingsRes.System.name)
+                        SettingsRes.NetworkAndInternet -> navController.navigate(SettingsRes.NetworkAndInternet.name)
                     }
                 },
             )
@@ -73,12 +64,13 @@ fun SettingsScreen (
 @Composable
 fun SettingsContent (
     modifier: Modifier,
-    name: String,
+    @StringRes name: Int,
     onSettingClicked: () -> Unit = {}
 ) {
-    Column(modifier
-        .background(MaterialTheme.colorScheme.surface)
-        .clickable { onSettingClicked() },
+    Column(
+        modifier
+            .background(MaterialTheme.colorScheme.surface)
+            .clickable { onSettingClicked() },
     ) {
         Row(
             modifier = modifier
@@ -90,7 +82,7 @@ fun SettingsContent (
             Text(
                 style = MaterialTheme.typography.labelMedium,
                 color = MaterialTheme.colorScheme.onBackground,
-                text = name
+                text = stringResource(name)
             )
             Icon(
                 modifier = Modifier.size(width = 24.dp, height = 24.dp),
@@ -109,8 +101,5 @@ fun SettingsContent (
 @Preview(group="Test", showBackground = true)
 @Composable
 fun SettingsPreview() {
-    SettingsScreen(
-        vm = SettingViewModel(
-            ProfileRepository(ProfileDiskDataSource(File("/storage/emulated/0/Profile.json")))
-        ))
+    SettingsScreen()
 }

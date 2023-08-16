@@ -119,12 +119,12 @@ fun SystemScreen(
             }
             RadioButtonsInCardViewInCommonUi(
                 modifier = modifier,
-                currentResId = vm.uiState.defaultSpellChecker,
+                currentResId = vm.uiState.defaultSpellChecker.resIdOfTitle,
                 onRadioClicked = {vm.update("defaultSpellChecker", it)},
                 titleAndSubTitleRes = listOf(
                     Pair(
-                        DefaultSpellChecker.GboardSpellChecker.resIdOfTitle,
-                        DefaultSpellChecker.GboardSpellChecker.resIdOfSubTitle)))
+                        SystemUiState.DefaultSpellChecker.GboardSpellChecker.resIdOfTitle,
+                        SystemUiState.DefaultSpellChecker.GboardSpellChecker.resIdOfSubTitle)))
             Text(
                 modifier = modifier.padding(start = 16.dp, top = 14.dp, bottom = 8.dp),
                 style = MaterialTheme.typography.labelMedium,

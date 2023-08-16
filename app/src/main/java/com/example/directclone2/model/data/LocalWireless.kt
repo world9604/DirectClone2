@@ -13,10 +13,10 @@ data class LocalWireless(
     val wifi: String = "OFF",
     @SerializedName("saved_networks")
     val savedNetworks: List<String> = listOf(""),
-    @SerializedName("data_sever")
-    val dataSever: String = "",
     @SerializedName("roaming")
     val roaming: String = "",
     @SerializedName("vpn")
     val vpn: String = "",
+    @SerializedName("data_server")
+    val dataServer: String = "",
 )

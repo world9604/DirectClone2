@@ -37,8 +37,24 @@ class SystemViewModel (
     var uiState by mutableStateOf(SystemUiState())
         private set
 
-    fun <T: Any> update(field: String, value: T) = viewModelScope.launch {
+    fun <T: Any> update(field: String, value: T) {
         uiState = uiState.update(field, value)
+        viewModelScope.launch {
+            repo.updateSystem(
+                uiState.languages,
+                uiState.spellChecker,
+                uiState.spellCheckLanguage,
+                uiState.defaultSpellChecker.name,
+                //uiState.spellCheckPointerSpeed,
+                uiState.useNetworkProvidedTime,
+                uiState.systemDate,
+                uiState.systemTime,
+                uiState.useNetworkProvidedTimeZone,
+                uiState.timeZone.toString(),
+                uiState.use24hourFormat,
+                uiState.ntpServer,
+            )
+        }
     }
 
     fun updateSystemDate(date: Long) = viewModelScope.launch {

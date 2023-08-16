@@ -6,10 +6,10 @@ import kotlin.reflect.full.instanceParameter
 import kotlin.reflect.full.memberFunctions
 
 data class SoundUiState(
-    @StringRes val vibrateOnTouch: Int = VibrateOnTouch.Disable.resIdOfTitle,
-    @StringRes val conversations: Int = Conversations.None.resIdOfTitle,
-    @StringRes val messages: Int = Messages.None.resIdOfTitle,
-    @StringRes val calls: Int = Calls.None.resIdOfTitle,
+    val vibrateOnTouch: VibrateOnTouch = VibrateOnTouch.Disable,
+    val conversations: Conversations = Conversations.None,
+    val messages: Messages = Messages.None,
+    val calls: Calls = Calls.None,
     val musicVolume: Float = 1f,
     val ringVolume: Float = 1f,
     val callVolume: Float = 1f,

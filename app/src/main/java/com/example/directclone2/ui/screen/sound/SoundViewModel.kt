@@ -34,7 +34,34 @@ class SoundViewModel (
     var uiState by mutableStateOf(SoundUiState())
         private set
 
-    fun <T: Any> update(field: String, value: T) = viewModelScope.launch {
+    fun <T: Any> update(field: String, value: T) {
         uiState = uiState.update(field, value)
+        viewModelScope.launch {
+            repo.updateSound(
+                uiState.vibrateOnTouch.name,
+                uiState.conversations.name,
+                uiState.messages.name,
+                uiState.calls.name,
+                floatToString(uiState.musicVolume),
+                floatToString(uiState.ringVolume),
+                floatToString(uiState.callVolume),
+                floatToString(uiState.notificationVolume),
+                floatToString(uiState.alarmVolume),
+                uiState.alarms,
+                uiState.mediaSounds,
+                uiState.touchSounds,
+                uiState.reminders,
+                uiState.calendarEvents,
+                uiState.dialPadTones,
+                uiState.screenLockingSounds,
+                uiState.chargingSoundsAndVibration,
+                uiState.advancedTouchSounds,
+                uiState.touchVibration,
+            )
+        }
+    }
+
+    private fun floatToString(value: Float): String {
+        return (value * 100f).toInt().toString()
     }
 }

@@ -10,20 +10,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.directclone2.model.ProfileDiskDataSource
 import com.example.directclone2.model.ProfileRepository
+import com.example.directclone2.ui.screen.battery.BatteryViewModel
 import java.io.File
-
-@Preview(group="Work", showBackground = true)
-@Composable
-fun MainScreenPreview(){
-    MainScreen(
-        vm = SettingViewModel(
-            ProfileRepository(ProfileDiskDataSource(File("/storage/emulated/0/Profile.json")))))
-}
 
 @Composable
 fun MainScreen(
     modifier: Modifier = Modifier,
-    vm: SettingViewModel = viewModel(),
+    vm: MainViewModel = viewModel(factory = MainViewModel.Factory),
     onAppClicked: () -> Unit = {}
 ) {
     Scaffold(
@@ -35,20 +28,25 @@ fun MainScreen(
         floatingActionButtonPosition = FabPosition.Center,
     ) { innerPadding ->
         when (vm.currentTab) {
-            SettingViewModel.TabContent.Backup -> {
+            MainUiState.TabContent.Backup -> {
                 BackupContent(
                     modifier = modifier.padding(innerPadding),
                     vm = vm,
                     onAppClicked = onAppClicked
                 )
             }
-            SettingViewModel.TabContent.Sync -> {
+            MainUiState.TabContent.Sync -> {
                 SyncContent(
                     modifier = modifier.padding(innerPadding),
                     vm = vm,
-                    //apps = vm.apps,
                 )
             }
         }
     }
+}
+
+@Preview(group="Work", showBackground = true)
+@Composable
+fun MainScreenPreview(){
+    MainScreen(vm = MainViewModel(ProfileRepository(ProfileDiskDataSource(File("/storage/emulated/0/Profile.json")))))
 }

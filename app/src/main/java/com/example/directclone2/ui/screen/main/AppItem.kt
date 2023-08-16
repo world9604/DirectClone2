@@ -1,4 +1,4 @@
-package com.example.directclone2.ui
+package com.example.directclone2.ui.screen.main
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf

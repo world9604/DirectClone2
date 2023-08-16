@@ -38,7 +38,12 @@ class NetworkAndInternetViewModel (
         uiState = uiState.update(field, value)
         viewModelScope.launch {
             repo.updateNetworkAndInternet(
-
+                uiState.wifi,
+                //uiState.savedNetworks,
+                uiState.dataServer,
+                uiState.roaming,
+                uiState.ethernet,
+                uiState.vpn,
             )
         }
     }
