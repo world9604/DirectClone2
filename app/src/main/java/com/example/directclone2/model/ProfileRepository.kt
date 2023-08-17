@@ -1,6 +1,7 @@
 package com.example.directclone2.model
 
 import com.example.directclone2.model.data.LocalProfile
+import com.example.directclone2.model.usecase.MakeProfileFileNameUseCase
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -8,6 +9,7 @@ import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
+import java.io.File
 
 @ExperimentalCoroutinesApi
 @FlowPreview
@@ -18,6 +20,17 @@ class ProfileRepository (
 ) {
     private val accessMutex = Mutex()
     private var profile = LocalProfile()
+
+    companion object {
+        @Volatile
+        private var instance: ProfileRepository? = null
+        fun getInstance(localDataSource: ProfileDiskDataSource) =
+            instance ?:   synchronized(ProfileRepository::class.java) {
+                instance ?: ProfileRepository(localDataSource).also {
+                    instance = it
+                }
+            }
+    }
 
     /*
     fun observeAll() : Flow<BatteryUiState> {
@@ -174,7 +187,19 @@ class ProfileRepository (
 
     suspend fun create() {
         withContext(dispatcher) {
+            val fileName = MakeProfileFileNameUseCase("modelName", "partNum")
+            localDataSource.create(fileName)
             localDataSource.upsert(profile)
+        }
+    }
+
+    fun getFile(): File {
+        return localDataSource.getFile()
+    }
+
+    suspend fun updateProfileFileName(fileName: String) {
+        withContext(dispatcher) {
+            localDataSource.updateProfileFileName(fileName)
         }
     }
 }

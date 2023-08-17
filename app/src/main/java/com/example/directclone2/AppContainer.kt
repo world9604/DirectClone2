@@ -13,10 +13,10 @@ class DefaultAppContainer : AppContainer {
     private val baseUrl = "/storage/emulated/0/Profile.json"
 
     private val diskDataSource: ProfileDiskDataSource by lazy {
-        ProfileDiskDataSource(File(baseUrl))
+        ProfileDiskDataSource.getInstance(File(baseUrl))
     }
 
     override val profileRepository: ProfileRepository by lazy {
-        ProfileRepository(diskDataSource)
+        ProfileRepository.getInstance(diskDataSource)
     }
 }

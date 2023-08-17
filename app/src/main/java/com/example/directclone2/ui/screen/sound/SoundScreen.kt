@@ -417,6 +417,6 @@ fun SoundScreen(
 fun SoundPreview() {
     SoundScreen(
         vm = SoundViewModel(
-            ProfileRepository(ProfileDiskDataSource(File("/storage/emulated/0/Profile.json"))))
+            ProfileRepository.getInstance(ProfileDiskDataSource.getInstance(File("/storage/emulated/0/Profile.json"))))
     )
 }

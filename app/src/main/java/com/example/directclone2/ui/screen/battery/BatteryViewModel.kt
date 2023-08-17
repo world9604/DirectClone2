@@ -8,8 +8,11 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.CreationExtras
+import androidx.lifecycle.viewmodel.initializer
+import androidx.lifecycle.viewmodel.viewModelFactory
 import com.example.directclone2.DirectCloneApplication
 import com.example.directclone2.model.ProfileRepository
+import com.example.directclone2.ui.screen.main.MainViewModel
 import kotlinx.coroutines.launch
 
 class BatteryViewModel (
@@ -18,15 +21,10 @@ class BatteryViewModel (
 
     companion object {
         const val TAG = "BatteryViewModel"
-        val Factory: ViewModelProvider.Factory = object : ViewModelProvider.Factory {
-            @Suppress("UNCHECKED_CAST")
-            override fun <T : ViewModel> create(
-                modelClass: Class<T>,
-                extras: CreationExtras
-            ): T {
-                val application = checkNotNull(extras[APPLICATION_KEY])
-                return BatteryViewModel(
-                    (application as DirectCloneApplication).container.profileRepository) as T
+        val Factory: ViewModelProvider.Factory = viewModelFactory {
+            initializer {
+                val application = (this[APPLICATION_KEY] as DirectCloneApplication)
+                BatteryViewModel((application).container.profileRepository)
             }
         }
     }

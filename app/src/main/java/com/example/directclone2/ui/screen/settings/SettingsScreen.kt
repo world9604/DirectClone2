@@ -24,8 +24,11 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
-import com.example.directclone2.ui.screen.main.MainUiState.SettingsRes
+import com.example.directclone2.model.ProfileDiskDataSource
+import com.example.directclone2.model.ProfileRepository
+import com.example.directclone2.ui.screen.main.MainUiState.NavigationRes
 import com.example.directclone2.ui.screen.main.MainViewModel
+import java.io.File
 
 @Composable
 fun SettingsScreen (
@@ -36,24 +39,25 @@ fun SettingsScreen (
     Column(
         modifier = modifier.background(MaterialTheme.colorScheme.background)
     ) {
-        SettingsRes.values().forEachIndexed { index, item ->
+        NavigationRes.values().forEachIndexed { index, item ->
+            if (!item.isInSettingsScreen) return@forEachIndexed
             var newModifier = if (index == 0) Modifier.padding(top = 7.dp) else Modifier
             SettingsContent (
                 modifier = newModifier.background(MaterialTheme.colorScheme.surface),
                 name = item.title,
                 onSettingClicked = {
-                    when(item) {
-                        SettingsRes.Backup -> navController.navigate(SettingsRes.Backup.name)
-                        SettingsRes.Sync -> navController.navigate(SettingsRes.Sync.name)
-                        SettingsRes.Settings -> navController.navigate(SettingsRes.Settings.name)
-                        SettingsRes.Sound -> navController.navigate(SettingsRes.Sound.name)
-                        SettingsRes.Battery -> navController.navigate(SettingsRes.Battery.name)
-                        SettingsRes.LocationAndSecurity -> navController.navigate(SettingsRes.LocationAndSecurity.name)
-                        SettingsRes.ConnectedDevices -> navController.navigate(SettingsRes.ConnectedDevices.name)
-                        SettingsRes.Apps -> navController.navigate(SettingsRes.Apps.name)
-                        SettingsRes.Display -> navController.navigate(SettingsRes.Display.name)
-                        SettingsRes.System -> navController.navigate(SettingsRes.System.name)
-                        SettingsRes.NetworkAndInternet -> navController.navigate(SettingsRes.NetworkAndInternet.name)
+                    when (item) {
+                        NavigationRes.Backup -> navController.navigate(NavigationRes.Backup.name)
+                        NavigationRes.Sync -> navController.navigate(NavigationRes.Sync.name)
+                        NavigationRes.Settings -> navController.navigate(NavigationRes.Settings.name)
+                        NavigationRes.Sound -> navController.navigate(NavigationRes.Sound.name)
+                        NavigationRes.Battery -> navController.navigate(NavigationRes.Battery.name)
+                        NavigationRes.LocationAndSecurity -> navController.navigate(NavigationRes.LocationAndSecurity.name)
+                        NavigationRes.ConnectedDevices -> navController.navigate(NavigationRes.ConnectedDevices.name)
+                        NavigationRes.Apps -> navController.navigate(NavigationRes.Apps.name)
+                        NavigationRes.Display -> navController.navigate(NavigationRes.Display.name)
+                        NavigationRes.System -> navController.navigate(NavigationRes.System.name)
+                        NavigationRes.NetworkAndInternet -> navController.navigate(NavigationRes.NetworkAndInternet.name)
                     }
                 },
             )
@@ -78,7 +82,7 @@ fun SettingsContent (
                 .padding(start = 16.dp, end = 16.dp, top = 9.dp, bottom = 11.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
-            ) {
+        ) {
             Text(
                 style = MaterialTheme.typography.labelMedium,
                 color = MaterialTheme.colorScheme.onBackground,
@@ -101,5 +105,7 @@ fun SettingsContent (
 @Preview(group="Test", showBackground = true)
 @Composable
 fun SettingsPreview() {
-    SettingsScreen()
+    SettingsScreen(MainViewModel(ProfileRepository.getInstance(ProfileDiskDataSource.getInstance(
+        File("")
+    ))))
 }

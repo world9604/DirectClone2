@@ -6,15 +6,22 @@ import com.example.directclone2.model.data.LocalProfile
 import com.google.gson.Gson
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.sync.Mutex
-import kotlinx.coroutines.sync.withLock
 import java.io.File
 import java.io.FileNotFoundException
 
 
 class ProfileDiskDataSource(private val jsonFile: File) {
+
     companion object {
-        const val TAG = "ProfileDao"
+        const val TAG = "ProfileDiskDataSource"
+        @Volatile
+        private var instance: ProfileDiskDataSource? = null
+        fun getInstance(jsonFile: File) =
+            instance ?: synchronized(ProfileDiskDataSource::class.java) {
+                instance ?: ProfileDiskDataSource(jsonFile).also {
+                    instance = it
+                }
+            }
     }
 
     fun observeAll(): Flow<LocalBattery> = flow {
@@ -38,6 +45,17 @@ class ProfileDiskDataSource(private val jsonFile: File) {
     }
 
     fun delete() {
-        jsonFile?.let { delete() }
+        jsonFile?.let {
+            it.delete()
+        }
+    }
+
+    fun getFile(): File {
+        return jsonFile
+    }
+
+    fun updateProfileFileName(fileName: String): Boolean {
+        var destFile = File(jsonFile.parentFile, fileName)
+        return jsonFile.renameTo(destFile)
     }
 }

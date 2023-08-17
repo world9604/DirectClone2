@@ -62,7 +62,7 @@ fun ConnectedDevicesScreen(
 fun ConnectedDevicesPreview() {
     ConnectedDevicesScreen(
         vm = ConnectedDevicesViewModel(
-            ProfileRepository(
-                ProfileDiskDataSource(File("/storage/emulated/0/Profile.json"))))
+            ProfileRepository.getInstance(
+                ProfileDiskDataSource.getInstance(File("/storage/emulated/0/Profile.json"))))
     )
 }

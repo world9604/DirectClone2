@@ -236,5 +236,5 @@ fun BatteryScreen(
 @Preview(group="Test", showBackground = true)
 @Composable
 fun BatteryPreview() {
-    BatteryScreen(vm = BatteryViewModel(ProfileRepository(ProfileDiskDataSource(File("/storage/emulated/0/Profile.json")))))
+    BatteryScreen(vm = BatteryViewModel(ProfileRepository.getInstance(ProfileDiskDataSource.getInstance(File("/storage/emulated/0/Profile.json")))))
 }

@@ -247,7 +247,7 @@ fun SystemScreen(
 fun SystemPreview() {
     SystemScreen(
         vm = SystemViewModel(
-            ProfileRepository(ProfileDiskDataSource(File("/storage/emulated/0/Profile.json")))
+            ProfileRepository.getInstance(ProfileDiskDataSource.getInstance(File("/storage/emulated/0/Profile.json")))
         )
     )
 }

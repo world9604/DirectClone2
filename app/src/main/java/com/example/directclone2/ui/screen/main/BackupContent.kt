@@ -1,11 +1,15 @@
 package com.example.directclone2.ui.screen.main
 
+import androidx.compose.animation.expandVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.absoluteOffset
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -23,11 +27,13 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LocalMinimumInteractiveComponentEnforcement
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.RadioButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -44,11 +50,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.directclone2.R
+import com.example.directclone2.model.ProfileDiskDataSource
+import com.example.directclone2.model.ProfileRepository
 import com.example.directclone2.ui.components.ButtonInCommonUi
 import com.example.directclone2.ui.components.CardDividerInCommonUi
 import com.example.directclone2.ui.components.CardViewInCommonUi
 import com.example.directclone2.ui.components.CheckBoxInCommonUi
 import com.example.directclone2.ui.components.OutlinedTextFieldInCommonUi
+import java.io.File
 import java.util.Locale
 
 @Composable
@@ -87,25 +96,44 @@ fun BackupContent(
                     onAppClicked = onAppClicked)
             }
         }
+        if (vm.uiState.openBackupDialog) BackupDialog(vm)
+        if (vm.uiState.openSetPasswordDialog) SetPasswordDialog(vm)
+        if (vm.uiState.openBackupResultDialog) BackupResultDialog(vm)
+    }
+    Box(modifier = Modifier.fillMaxSize()) {
         ButtonInCommonUi(
-            modifier = Modifier.fillMaxWidth().padding(16.dp),
+            modifier = Modifier.align(Alignment.BottomCenter).fillMaxWidth().padding(16.dp),
             enabled = vm.haveAtLeastOneAppToBackUp(),
             containerColor = MaterialTheme.colorScheme.primary,
-            onClick = {vm.update("openBackupDialog", true)}
+            onClick = {
+                vm.update("openBackupDialog", true)
+                vm.initIsCompletedCreateBackupFile()
+            }
         ) {
             Text(
                 text = stringResource(R.string.backup_content_backup_btn,
                     vm.getNumOfSelectedApps()).uppercase(Locale.getDefault()),
                 style = MaterialTheme.typography.titleLarge)
         }
-        if (vm.uiState.openBackupDialog) BackupDialog(vm)
-        if (vm.uiState.openSetPasswordDialog) SetPasswordDialog(vm)
-        if (vm.uiState.openBackupResultDialog) BackupResultDialog(vm)
     }
 }
 
 @Composable
 private fun BackupResultDialog(vm: MainViewModel) {
+    data class MultiComponent(val x: String, val y: String, val z: String, val a: Color)
+    val (title, subTitle, btnText, btnColor) = when (vm.uiState.isCompletedCreateBackupFile) {
+        true -> MultiComponent(
+            stringResource(R.string.backup_content_backup_result_dialog_title_label),
+            stringResource(R.string.backup_content_backup_result_dialog_sub_title_label),
+            stringResource(R.string.backup_content_backup_result_dialog_btn_text_label).uppercase(Locale.getDefault()),
+            MaterialTheme.colorScheme.primary)
+        false -> MultiComponent(
+            stringResource(R.string.backup_content_backup_result_dialog_title_label_when_progress),
+            stringResource(R.string.backup_content_backup_result_dialog_sub_title_label_when_progress),
+            stringResource(R.string.backup_content_backup_result_dialog_btn_text_label_when_progress).uppercase(Locale.getDefault()),
+            MaterialTheme.colorScheme.onTertiaryContainer)
+    }
+
     Dialog(onDismissRequest = {}) {
         Box(
             Modifier.background(
@@ -126,17 +154,24 @@ private fun BackupResultDialog(vm: MainViewModel) {
                     Text(
                         style = MaterialTheme.typography.headlineLarge,
                         color = MaterialTheme.colorScheme.secondary,
-                        text = "Backup in progress")
+                        text = title)
                 }
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(bottom = 28.dp),
                     horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    CircularProgressIndicator(
-                        color = MaterialTheme.colorScheme.primary
-                    )
+                    if(subTitle.isBlank()) {
+                        CircularProgressIndicator(
+                            color = MaterialTheme.colorScheme.primary)
+                    } else {
+                        Text(
+                            style = MaterialTheme.typography.headlineSmall,
+                            color = MaterialTheme.colorScheme.onTertiaryContainer,
+                            text = subTitle)
+                    }
                 }
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -145,21 +180,11 @@ private fun BackupResultDialog(vm: MainViewModel) {
                 ) {
                     ButtonInCommonUi(
                         modifier = Modifier.fillMaxWidth(),
-                        onClick = {/* TODO */},
-                        containerColor = MaterialTheme.colorScheme.onTertiaryContainer
+                        onClick = {vm.update("openBackupResultDialog", false)},
+                        containerColor = btnColor
                     ) {
-                        Text(
-                            style = MaterialTheme.typography.displayLarge,
-                            text = "CANCEL")
-                    }
-                    ButtonInCommonUi(
-                        modifier = Modifier.fillMaxWidth(),
-                        onClick = {/* TODO */},
-                        containerColor = MaterialTheme.colorScheme.primary
-                    ) {
-                        Text(
-                            style = MaterialTheme.typography.displayLarge,
-                            text = "OK")
+                        Text(style = MaterialTheme.typography.displayLarge,
+                            text = btnText)
                     }
                 }
             }
@@ -207,16 +232,21 @@ private fun SetPasswordDialog(vm: MainViewModel) {
                     horizontalArrangement = Arrangement.Center
                 ) {
                     ButtonInCommonUi(
-                        modifier = Modifier.height(48.dp).width(144.dp).padding(end = 8.dp),
+                        modifier = Modifier
+                            .height(48.dp)
+                            .width(144.dp)
+                            .padding(end = 8.dp),
                         containerColor = MaterialTheme.colorScheme.onTertiaryContainer,
-                        onClick = { /*TODO*/ }
+                        onClick = { vm.update("openSetPasswordDialog", false) }
                     ) {
                         Text(
                             style = MaterialTheme.typography.displayLarge,
                             text = "CANCEL".uppercase(Locale.getDefault()))
                     }
                     ButtonInCommonUi(
-                        modifier = Modifier.height(48.dp).width(144.dp),
+                        modifier = Modifier
+                            .height(48.dp)
+                            .width(144.dp),
                         enabled = vm.matchPasswordAndConfirmPassword(),
                         containerColor = MaterialTheme.colorScheme.primary,
                         onClick = {
@@ -270,11 +300,12 @@ private fun BackupDialog(vm: MainViewModel) {
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onBackground,
                         text = "• File name : ")
-                    Row(Modifier.padding(start = 24.dp)) {
+                    Row(Modifier.padding(start = 24.dp, top = 3.dp)) {
                         Text(
                             style = MaterialTheme.typography.labelSmall,
                             color = MaterialTheme.colorScheme.onTertiaryContainer,
-                            text = "• ${vm.uiState.backupFileName}")
+                            //text = "• ${vm.uiState.backupFile.name}")
+                            text = "• ")
                     }
                 }
                 Column(
@@ -288,7 +319,7 @@ private fun BackupDialog(vm: MainViewModel) {
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(start = 24.dp),
+                            .padding(start = 24.dp, top = 3.dp),
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.Start
                     ) {
@@ -334,18 +365,15 @@ private fun BackupDialog(vm: MainViewModel) {
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onBackground,
                         text = "• Save to : ")
-                    Row(Modifier.padding(start = 24.dp)) {
+                    Row(Modifier.padding(start = 24.dp, top = 3.dp)) {
                         Text(
                             style = MaterialTheme.typography.labelSmall,
                             color = MaterialTheme.colorScheme.onTertiaryContainer,
-                            //text = "• /storage/emulated/0/DirectClone")
                             text = "• ${vm.uiState.backupFileSaveLocation}")
                     }
                 }
                 Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 12.dp),
+                    modifier = Modifier.fillMaxWidth().padding(),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
@@ -355,12 +383,12 @@ private fun BackupDialog(vm: MainViewModel) {
                         text = "• Set password : ")
                     CheckBoxInCommonUi(
                         checked = vm.uiState.usePassword,
-                        onCheckedChange = {vm.update("usePassword", it)})
+                        onCheckedChange = { vm.update("usePassword", it) })
                 }
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(top = 28.dp),
+                        .padding(top = 18.dp),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
@@ -503,5 +531,5 @@ private fun AppsForBackupToggleCard(
 @Preview(group = "Work", heightDp = 800, showBackground = true)
 @Composable
 fun BackupContentPreview() {
-    BackupContent()
+    BackupContent(vm = MainViewModel(ProfileRepository.getInstance(ProfileDiskDataSource.getInstance(File("")))))
 }

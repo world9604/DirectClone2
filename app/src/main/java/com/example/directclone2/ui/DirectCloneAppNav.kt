@@ -23,62 +23,59 @@ import com.example.directclone2.ui.screen.main.MainScreen
 import com.example.directclone2.ui.screen.settings.SettingsScreen
 import com.example.directclone2.ui.screen.sound.SoundScreen
 import com.example.directclone2.ui.screen.system.SystemScreen
-import com.example.directclone2.ui.screen.main.MainUiState.SettingsRes
+import com.example.directclone2.ui.screen.main.MainUiState.NavigationRes
 
 @Composable
 fun DirectCloneApp(
     navController: NavHostController = rememberNavController()
 ) {
     val backStackEntry by navController.currentBackStackEntryAsState()
-    val currentScreen = SettingsRes.valueOf(
-        backStackEntry?.destination?.route ?: SettingsRes.Apps.name
-    )
+    val currentScreen = NavigationRes.valueOf(
+        backStackEntry?.destination?.route ?: NavigationRes.Apps.name)
     Scaffold(
         topBar = {
             Column {
-                AppBar(
-                    currentScreen = currentScreen)
+                AppBar(currentScreen = currentScreen)
             }
         }
     ) { innerPadding ->
         NavHost(
             navController = navController,
-            startDestination = SettingsRes.Backup.name,
+            startDestination = NavigationRes.Backup.name,
             modifier = Modifier.padding(innerPadding)
         ) {
-            composable(route = SettingsRes.Backup.name) {
+            composable(route = NavigationRes.Backup.name) {
                 MainScreen(
                     modifier = Modifier.fillMaxHeight(),
-                    onAppClicked = { navController.navigate(SettingsRes.Settings.name) },
-                )
+                    onAppClicked = { navController.navigate(NavigationRes.Settings.name) })
             }
-            composable(route = SettingsRes.Settings.name) {
+            composable(route = NavigationRes.Settings.name) {
                 SettingsScreen(
                     modifier = Modifier.fillMaxHeight(),
                     navController = navController)
             }
-            composable(route = SettingsRes.ConnectedDevices.name) {
+            composable(route = NavigationRes.ConnectedDevices.name) {
                 ConnectedDevicesScreen(modifier = Modifier.fillMaxHeight())
             }
-            composable(route = SettingsRes.Display.name) {
+            composable(route = NavigationRes.Display.name) {
                 DisplayScreen(modifier = Modifier.fillMaxHeight())
             }
-            composable(route = SettingsRes.System.name) {
+            composable(route = NavigationRes.System.name) {
                 SystemScreen(modifier = Modifier.fillMaxHeight())
             }
-            composable(route = SettingsRes.LocationAndSecurity.name) {
+            composable(route = NavigationRes.LocationAndSecurity.name) {
                 LocationAndSecurityScreen(modifier = Modifier.fillMaxHeight())
             }
-            composable(route = SettingsRes.Battery.name) {
+            composable(route = NavigationRes.Battery.name) {
                 BatteryScreen(modifier = Modifier.fillMaxHeight())
             }
-            composable(route = SettingsRes.Apps.name) {
+            composable(route = NavigationRes.Apps.name) {
                 AppsScreen(modifier = Modifier.fillMaxHeight())
             }
-            composable(route = SettingsRes.Sound.name) {
+            composable(route = NavigationRes.Sound.name) {
                 SoundScreen(modifier = Modifier.fillMaxHeight())
             }
-            composable(route = SettingsRes.NetworkAndInternet.name) {
+            composable(route = NavigationRes.NetworkAndInternet.name) {
                 NetworkAndInternetScreen(modifier = Modifier.fillMaxHeight())
             }
         }

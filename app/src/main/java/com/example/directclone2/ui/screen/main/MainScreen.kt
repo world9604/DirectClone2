@@ -48,5 +48,5 @@ fun MainScreen(
 @Preview(group="Work", showBackground = true)
 @Composable
 fun MainScreenPreview(){
-    MainScreen(vm = MainViewModel(ProfileRepository(ProfileDiskDataSource(File("/storage/emulated/0/Profile.json")))))
+    MainScreen(vm = MainViewModel(ProfileRepository.getInstance(ProfileDiskDataSource.getInstance(File("/storage/emulated/0/Profile.json")))))
 }

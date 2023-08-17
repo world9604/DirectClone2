@@ -8,11 +8,14 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.CreationExtras
+import androidx.lifecycle.viewmodel.initializer
+import androidx.lifecycle.viewmodel.viewModelFactory
 import com.example.directclone2.DirectCloneApplication
 import com.example.directclone2.model.ProfileRepository
-import com.example.directclone2.ui.screen.battery.update
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import java.io.File
 
 class MainViewModel (
     private val repo: ProfileRepository
@@ -20,15 +23,10 @@ class MainViewModel (
 
     companion object {
         const val TAG = "MainViewModel"
-        val Factory: ViewModelProvider.Factory = object : ViewModelProvider.Factory {
-            @Suppress("UNCHECKED_CAST")
-            override fun <T : ViewModel> create(
-                modelClass: Class<T>,
-                extras: CreationExtras
-            ): T {
-                val application = checkNotNull(extras[APPLICATION_KEY])
-                return MainViewModel(
-                    (application as DirectCloneApplication).container.profileRepository) as T
+        val Factory: ViewModelProvider.Factory = viewModelFactory {
+            initializer {
+                val application = (this[APPLICATION_KEY] as DirectCloneApplication)
+                MainViewModel((application).container.profileRepository)
             }
         }
     }
@@ -42,6 +40,8 @@ class MainViewModel (
 
     fun save() = viewModelScope.launch {
         repo.create()
+        delay(3000)
+        uiState = uiState.copy(isCompletedCreateBackupFile = true)
     }
 
     val tabs = MainUiState.TabContent.values()
@@ -94,5 +94,18 @@ class MainViewModel (
             uiState = uiState.copy(openBackupResultDialog = true)
             save()
         }
+    }
+
+    init {
+        initBackupFileSaveLocation()
+    }
+
+    private fun initBackupFileSaveLocation() {
+        val saveLocation = "${repo.getFile().absolutePath}"
+        uiState = uiState.copy(backupFileSaveLocation = saveLocation)
+    }
+
+    fun initIsCompletedCreateBackupFile() {
+        uiState = uiState.copy(isCompletedCreateBackupFile = false)
     }
 }

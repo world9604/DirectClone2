@@ -61,7 +61,7 @@ fun NetworkAndInternetScreen(
                     text = "Data Server")
                 ToggleSwitchInCommonUi(
                     checked = vm.uiState.dataServer,
-                    onCheckedChange = {vm.update("dataSaver", it)}
+                    onCheckedChange = {vm.update("dataServer", it)}
                 )
             }
             CardViewItemInCommonUi(modifier) {
@@ -104,7 +104,7 @@ fun NetworkAndInternetScreen(
 fun NetworkAndInternetPreview() {
     NetworkAndInternetScreen(
         vm = NetworkAndInternetViewModel(
-            ProfileRepository(ProfileDiskDataSource(File("/storage/emulated/0/Profile.json")))
+            ProfileRepository.getInstance(ProfileDiskDataSource.getInstance(File("")))
         )
     )
 }

@@ -68,9 +68,11 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.absoluteOffset
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
@@ -82,17 +84,17 @@ import androidx.compose.material3.TimePickerLayoutType
 import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
-import com.example.directclone2.ui.screen.main.MainUiState.SettingsRes
+import com.example.directclone2.ui.screen.main.MainUiState.NavigationRes
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AppBar(
-    currentScreen: SettingsRes,
+    currentScreen: NavigationRes,
     onBackButtonClicked: () -> Unit = {}
 ) {
     TopAppBar(
         navigationIcon = {
-            if (currentScreen == SettingsRes.Backup || currentScreen == SettingsRes.Sync) {
+            if (currentScreen == NavigationRes.Backup || currentScreen == NavigationRes.Sync) {
                 Image(
                     modifier = Modifier.padding(start = 16.dp, top = 8.dp, bottom = 8.dp),
                     painter = painterResource(R.drawable.icon_direct_clone),
@@ -112,7 +114,7 @@ fun AppBar(
             text = stringResource(currentScreen.title)
         ) },
         actions = {
-            if (currentScreen == SettingsRes.Backup || currentScreen == SettingsRes.Sync) {
+            if (currentScreen == NavigationRes.Backup || currentScreen == NavigationRes.Sync) {
                 IconButton(onClick = {}) {
                     Icon(
                         imageVector = Icons.Default.Refresh,
@@ -138,8 +140,8 @@ fun AppBar(
 @Composable
 fun AppBarPreview() {
     Column() {
-        AppBar(currentScreen = SettingsRes.ConnectedDevices)
-        AppBar(currentScreen = SettingsRes.Backup)
+        AppBar(currentScreen = NavigationRes.ConnectedDevices)
+        AppBar(currentScreen = NavigationRes.Backup)
     }
 }
 
@@ -903,17 +905,20 @@ fun OutlinedTextFieldInCommonUiPreview() {
 fun ButtonInCommonUi(
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
+    contentColor: Color = MaterialTheme.colorScheme.tertiaryContainer,
+    disabledContainerColor: Color = MaterialTheme.colorScheme.primaryContainer,
     containerColor: Color = MaterialTheme.colorScheme.onTertiaryContainer,
+    color: ButtonColors = ButtonDefaults.buttonColors(
+        disabledContainerColor = disabledContainerColor,
+        containerColor = containerColor,
+        contentColor = contentColor),
     onClick: () -> Unit = {},
-    text: @Composable () -> Unit = {},
+    text: @Composable () -> Unit = {}
 ) {
     Button(
         modifier = modifier,
         enabled = enabled,
-        colors = ButtonDefaults.buttonColors(
-            disabledContainerColor = MaterialTheme.colorScheme.primaryContainer,
-            containerColor = containerColor,
-            contentColor = MaterialTheme.colorScheme.tertiaryContainer),
+        colors = color,
         shape = RoundedCornerShape(8.dp),
         onClick = {onClick()}
     ) {

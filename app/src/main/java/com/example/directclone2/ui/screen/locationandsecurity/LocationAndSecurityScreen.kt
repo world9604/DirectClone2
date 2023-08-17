@@ -202,6 +202,6 @@ fun LocationAndSecurityScreen(
 fun LocationAndSecurityPreview() {
     LocationAndSecurityScreen(
         vm = LocationAndSecurityViewModel(
-            ProfileRepository(ProfileDiskDataSource(File("/storage/emulated/0/Profile.json"))))
+            ProfileRepository.getInstance(ProfileDiskDataSource.getInstance(File("/storage/emulated/0/Profile.json"))))
     )
 }

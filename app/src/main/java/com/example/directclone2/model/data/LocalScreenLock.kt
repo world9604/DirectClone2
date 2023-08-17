@@ -3,16 +3,16 @@ package com.example.directclone2.model.data
 import com.google.gson.annotations.SerializedName
 
 data class LocalScreenLock (
-    @SerializedName("Scan2StageEntity/screenlock_config/lockType")
+    @SerializedName("lockType")
     val screenLock: String = "",
-    @SerializedName("Scan2StageEntity/screenlock_config/oldLockPassword")
+    @SerializedName("oldLockPassword")
     val currentScreenLockPinOrPassword: String = "",
-    @SerializedName("Scan2StageEntity/screenlock_config/lockTypePassword")
+    @SerializedName("lockTypePassword")
     val screenLockPinOrPassword: String = "",
-    @SerializedName("Scan2StageEntity/screenlock_config/lockScreenMsg")
+    @SerializedName("lockScreenMsg")
     val screenLockMessage: String = "",
-    @SerializedName("Scan2StageEntity/screenlock_config/lockAfterTimeout")
+    @SerializedName("lockAfterTimeout")
     val lockAfterScreenTimeout: String = "",
-    @SerializedName("Scan2StageEntity/screenlock_config/powerButtonInstantlyLocks")
+    @SerializedName("powerButtonInstantlyLocks")
     val powerButtonInstantlyLocks: String = "",
 )

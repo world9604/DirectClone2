@@ -570,5 +570,11 @@
     <string name="default_spell_checker_gboard_spell_checker_option">Gboard spell checker</string>
     <string name="sync_content_start_direct_clone_service_btn">start direct clone service</string>
     <string name="backup_content_backup_btn">BACK UP (%s)</string>
+    <string name="backup_content_backup_result_dialog_title_label">Completed</string>
+    <string name="backup_content_backup_result_dialog_sub_title_label">Backup complete.</string>
+    <string name="backup_content_backup_result_dialog_btn_text_label">OK</string>
+    <string name="backup_content_backup_result_dialog_title_label_when_progress">Backup in progress</string>
+    <string name="backup_content_backup_result_dialog_sub_title_label_when_progress" />
+    <string name="backup_content_backup_result_dialog_btn_text_label_when_progress">CANCEL</string>
     <!-- [End] System > Languages options-->
 </resources>
