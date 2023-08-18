@@ -14,8 +14,6 @@ import com.example.directclone2.DirectCloneApplication
 import com.example.directclone2.model.ProfileRepository
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import java.io.File
 
 class MainViewModel (
     private val repo: ProfileRepository
@@ -39,7 +37,7 @@ class MainViewModel (
     }
 
     fun save() = viewModelScope.launch {
-        repo.create()
+        repo.create(uiState.password)
         delay(3000)
         uiState = uiState.copy(isCompletedCreateBackupFile = true)
     }
@@ -101,8 +99,7 @@ class MainViewModel (
     }
 
     private fun initBackupFileSaveLocation() {
-        val saveLocation = "${repo.getFile().absolutePath}"
-        uiState = uiState.copy(backupFileSaveLocation = saveLocation)
+        uiState = uiState.copy(parentSaveDirectoryForBackupFile = repo.getBackupDirectory())
     }
 
     fun initIsCompletedCreateBackupFile() {

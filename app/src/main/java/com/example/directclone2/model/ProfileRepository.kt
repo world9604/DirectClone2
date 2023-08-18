@@ -1,7 +1,7 @@
 package com.example.directclone2.model
 
 import com.example.directclone2.model.data.LocalProfile
-import com.example.directclone2.model.usecase.MakeProfileFileNameUseCase
+import com.example.directclone2.model.usecase.MakeBackupFileNameUseCase
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -9,7 +9,7 @@ import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
-import java.io.File
+import java.util.Calendar
 
 @ExperimentalCoroutinesApi
 @FlowPreview
@@ -185,21 +185,14 @@ class ProfileRepository (
         }
     }
 
-    suspend fun create() {
+    suspend fun create(password: String) = accessMutex.withLock {
         withContext(dispatcher) {
-            val fileName = MakeProfileFileNameUseCase("modelName", "partNum")
-            localDataSource.create(fileName)
+            val now = Calendar.getInstance().time
+            val fileName = MakeBackupFileNameUseCase("modelName", "partNum", now)
+            localDataSource.create(fileName, password, now)
             localDataSource.upsert(profile)
         }
     }
 
-    fun getFile(): File {
-        return localDataSource.getFile()
-    }
-
-    suspend fun updateProfileFileName(fileName: String) {
-        withContext(dispatcher) {
-            localDataSource.updateProfileFileName(fileName)
-        }
-    }
+    fun getBackupDirectory() = localDataSource.getParentFileName()
 }

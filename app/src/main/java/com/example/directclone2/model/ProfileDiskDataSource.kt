@@ -1,17 +1,16 @@
 package com.example.directclone2.model
 
 import android.util.Log
-import com.example.directclone2.model.data.LocalBattery
+import com.example.directclone2.model.data.LocalFile
 import com.example.directclone2.model.data.LocalProfile
 import com.google.gson.Gson
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import java.io.File
-import java.io.FileNotFoundException
+import java.util.Date
 
 
 class ProfileDiskDataSource(private val jsonFile: File) {
-
     companion object {
         const val TAG = "ProfileDiskDataSource"
         @Volatile
@@ -24,6 +23,14 @@ class ProfileDiskDataSource(private val jsonFile: File) {
             }
     }
 
+    private val accessMutex = Mutex()
+    private var localFile = LocalFile(
+        file = jsonFile,
+        createdDate = Date(),
+        password = ""
+    )
+
+    /*
     fun observeAll(): Flow<LocalBattery> = flow {
         val profile = getProfileFromFile()
         Log.d(TAG, "Profile in ProfileDiskDataSource.getProfile() : $profile")
@@ -38,24 +45,33 @@ class ProfileDiskDataSource(private val jsonFile: File) {
             throw FileNotFoundException("FileNotFoundException : ${jsonFile.absolutePath}")
         }
     }
+    */
 
-    fun upsert(profile: LocalProfile) {
+    suspend fun upsert(profile: LocalProfile) = accessMutex.withLock {
         Log.d(TAG, "Profile in ProfileDiskDataSource.setProfile() : ${Gson().toJson(profile)}")
-        jsonFile.writeText(Gson().toJson(profile))
+        localFile.file.writeText(Gson().toJson(profile))
     }
 
-    fun delete() {
-        jsonFile?.let {
+    suspend fun delete() = accessMutex.withLock {
+        localFile.file?.let {
             it.delete()
         }
     }
 
-    fun getFile(): File {
-        return jsonFile
+    suspend fun getFile(): File = accessMutex.withLock {
+        return localFile.file
     }
 
-    fun updateProfileFileName(fileName: String): Boolean {
-        var destFile = File(jsonFile.parentFile, fileName)
-        return jsonFile.renameTo(destFile)
+    suspend fun create(fileName: String, password: String, createdDate: Date)
+    = accessMutex.withLock {
+        val destFile = File(jsonFile.parentFile, fileName)
+        jsonFile.renameTo(destFile)
+        localFile = LocalFile(
+            file = jsonFile,
+            createdDate = createdDate,
+            password = password
+        )
     }
+
+    fun getParentFileName(): String = localFile.file.parent
 }

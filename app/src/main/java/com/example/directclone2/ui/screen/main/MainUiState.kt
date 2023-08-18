@@ -14,7 +14,7 @@ import kotlin.reflect.full.memberFunctions
 data class MainUiState(
     val backupFiles: List<BackupFile> = listOf(BackupFile(), BackupFile()),
     val isInternalStorage: Boolean = true,
-    val backupFileSaveLocation: String = "",
+    val parentSaveDirectoryForBackupFile: String = "",
     val usePassword: Boolean = false,
     val password: String = "",
     val confirmPassword: String = "",
