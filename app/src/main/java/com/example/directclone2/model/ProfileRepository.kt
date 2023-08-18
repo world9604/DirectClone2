@@ -194,5 +194,5 @@ class ProfileRepository (
         }
     }
 
-    fun getBackupDirectory() = localDataSource.getParentFileName()
+    fun getBackupFileDirectory() = localDataSource.getParentFileName()
 }

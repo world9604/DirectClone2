@@ -99,7 +99,7 @@ class MainViewModel (
     }
 
     private fun initBackupFileSaveLocation() {
-        uiState = uiState.copy(parentSaveDirectoryForBackupFile = repo.getBackupDirectory())
+        uiState = uiState.copy(parentSaveDirectoryForBackupFile = repo.getBackupFileDirectory())
     }
 
     fun initIsCompletedCreateBackupFile() {
