@@ -26,20 +26,6 @@ data class MainUiState(
     enum class TabContent(val index: Int, @StringRes val textRes: Int) {
         Backup(0, R.string.backup_content_title), Sync(1, R.string.sync_content_title)
     }
-
-    enum class NavigationRes(@StringRes val title: Int, val isInSettingsScreen: Boolean) {
-        Backup(title = R.string.app_name, false),
-        Sync(title = R.string.app_name, false),
-        Settings(title = R.string.settings_name, false),
-        NetworkAndInternet(title = R.string.network_internet_label, true),
-        ConnectedDevices(title = R.string.connected_devices_name, true),
-        Battery(title = R.string.battery_label, true),
-        Display(title = R.string.display_label, true),
-        Sound(title = R.string.sound_label, true),
-        Apps(title = R.string.apps_label, true),
-        LocationAndSecurity(title = R.string.location_security_label, true),
-        System(title = R.string.system_label, true),
-    }
 }
 
 fun <T: Any> MainUiState.update(fieldToBeUpdated: String, value: T): MainUiState {

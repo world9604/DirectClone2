@@ -1,6 +1,7 @@
 package com.example.directclone2.ui.components
 
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.annotation.ArrayRes
 import androidx.annotation.StringRes
 import androidx.compose.foundation.BorderStroke
@@ -68,7 +69,6 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.absoluteOffset
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Button
@@ -84,24 +84,26 @@ import androidx.compose.material3.TimePickerLayoutType
 import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
-import com.example.directclone2.ui.screen.main.MainUiState.NavigationRes
+import com.example.directclone2.ui.Screen
+import com.example.directclone2.ui.screens
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AppBar(
-    currentScreen: NavigationRes,
-    onBackButtonClicked: () -> Unit = {}
+fun BasicAppBar(
+    routeOfCurrentScreen: String,
+    navigateBack: (route: String) -> Unit = {}
 ) {
     TopAppBar(
         navigationIcon = {
-            if (currentScreen == NavigationRes.Backup || currentScreen == NavigationRes.Sync) {
+            if (routeOfCurrentScreen == Screen.BackupContent.route
+                || routeOfCurrentScreen == Screen.SyncContent.route) {
                 Image(
                     modifier = Modifier.padding(start = 16.dp, top = 8.dp, bottom = 8.dp),
                     painter = painterResource(R.drawable.icon_direct_clone),
                     contentDescription = null,
                     contentScale = ContentScale.Crop)
             } else {
-                IconButton(onClick = onBackButtonClicked) {
+                IconButton(onClick = { navigateBack(routeOfCurrentScreen) }) {
                     Icon(
                         imageVector = Icons.Default.ArrowBack,
                         contentDescription = "back button",
@@ -109,12 +111,16 @@ fun AppBar(
                 }
             }
          },
-        title = { Text(
-            style = MaterialTheme.typography.headlineLarge,
-            text = stringResource(currentScreen.title)
-        ) },
+        title = {
+            Text(
+                style = MaterialTheme.typography.headlineLarge,
+                text = stringResource(screens
+                    .findLast { it.route == routeOfCurrentScreen }?.let{ it.resourceId } 
+                    ?: Screen.BackupContent.resourceId))
+        },
         actions = {
-            if (currentScreen == NavigationRes.Backup || currentScreen == NavigationRes.Sync) {
+            if (routeOfCurrentScreen == Screen.BackupContent.route
+                || routeOfCurrentScreen == Screen.SyncContent.route) {
                 IconButton(onClick = {}) {
                     Icon(
                         imageVector = Icons.Default.Refresh,
@@ -140,8 +146,8 @@ fun AppBar(
 @Composable
 fun AppBarPreview() {
     Column() {
-        AppBar(currentScreen = NavigationRes.ConnectedDevices)
-        AppBar(currentScreen = NavigationRes.Backup)
+        BasicAppBar(routeOfCurrentScreen = Screen.ConnectedDevices.route)
+        BasicAppBar(routeOfCurrentScreen = Screen.BackupContent.route)
     }
 }
 

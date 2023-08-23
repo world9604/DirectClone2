@@ -11,20 +11,21 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.directclone2.model.ProfileDiskDataSource
-import com.example.directclone2.model.ProfileRepository
+import com.example.directclone2.R
+import com.example.directclone2.model.FakeProfileRepository
+import com.example.directclone2.ui.NavigationDestination
 import com.example.directclone2.ui.components.CardViewInCommonUi
 import com.example.directclone2.ui.components.CardViewItemInCommonUi
 import com.example.directclone2.ui.components.ToggleSwitchInCommonUi
-import java.io.File
-
 
 @Composable
 fun NetworkAndInternetScreen(
     modifier: Modifier = Modifier,
     vm: NetworkAndInternetViewModel = viewModel(factory = NetworkAndInternetViewModel.Factory),
 ) {
+
     Column(
         modifier = modifier.verticalScroll(rememberScrollState())
     ) {
@@ -103,8 +104,6 @@ fun NetworkAndInternetScreen(
 @Composable
 fun NetworkAndInternetPreview() {
     NetworkAndInternetScreen(
-        vm = NetworkAndInternetViewModel(
-            ProfileRepository.getInstance(ProfileDiskDataSource.getInstance(File("")))
-        )
+        vm = NetworkAndInternetViewModel(FakeProfileRepository(), SavedStateHandle())
     )
 }

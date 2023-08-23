@@ -25,10 +25,15 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.directclone2.R
+import com.example.directclone2.model.FakeProfileRepository
 import com.example.directclone2.model.ProfileDiskDataSource
 import com.example.directclone2.model.ProfileRepository
+import com.example.directclone2.model.data.ProfileDao
+import com.example.directclone2.ui.NavigationDestination
 import com.example.directclone2.ui.components.ButtonInCommonUi
 import com.example.directclone2.ui.components.CardDividerInCommonUi
 import com.example.directclone2.ui.components.CardViewInCommonUi
@@ -36,7 +41,6 @@ import com.example.directclone2.ui.components.RadioButtonsInCardViewInCommonUi
 import com.example.directclone2.ui.screen.main.MainViewModel
 import java.io.File
 import java.util.Locale
-
 
 @Composable
 fun BatteryScreen(
@@ -236,5 +240,5 @@ fun BatteryScreen(
 @Preview(group="Test", showBackground = true)
 @Composable
 fun BatteryPreview() {
-    BatteryScreen(vm = BatteryViewModel(ProfileRepository.getInstance(ProfileDiskDataSource.getInstance(File("/storage/emulated/0/Profile.json")))))
+    BatteryScreen(vm = BatteryViewModel(FakeProfileRepository(), SavedStateHandle()))
 }

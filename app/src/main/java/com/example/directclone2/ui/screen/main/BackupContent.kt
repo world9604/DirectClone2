@@ -43,10 +43,13 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.directclone2.R
+import com.example.directclone2.model.FakeProfileRepository
 import com.example.directclone2.model.ProfileDiskDataSource
 import com.example.directclone2.model.ProfileRepository
+import com.example.directclone2.ui.NavigationDestination
 import com.example.directclone2.ui.components.ButtonInCommonUi
 import com.example.directclone2.ui.components.CardDividerInCommonUi
 import com.example.directclone2.ui.components.CardViewInCommonUi
@@ -54,6 +57,14 @@ import com.example.directclone2.ui.components.CheckBoxInCommonUi
 import com.example.directclone2.ui.components.OutlinedTextFieldInCommonUi
 import java.io.File
 import java.util.Locale
+
+object BackupContentDestination : NavigationDestination {
+    override val route = "backup_content"
+    override val titleRes = R.string.app_name
+    const val profileIdArg = "profileId"
+    const val isInSettingScreen = false
+    val routeWithArgs = "$route/{$profileIdArg}"
+}
 
 @Composable
 fun BackupContent(
@@ -526,5 +537,5 @@ private fun AppsForBackupToggleCard(
 @Preview(group = "Work", heightDp = 800, showBackground = true)
 @Composable
 fun BackupContentPreview() {
-    BackupContent(vm = MainViewModel(ProfileRepository.getInstance(ProfileDiskDataSource.getInstance(File("")))))
+    BackupContent(vm = MainViewModel(FakeProfileRepository(), SavedStateHandle()))
 }

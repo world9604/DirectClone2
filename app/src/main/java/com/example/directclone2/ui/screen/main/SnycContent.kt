@@ -23,10 +23,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.directclone2.R
+import com.example.directclone2.model.FakeProfileRepository
 import com.example.directclone2.model.ProfileDiskDataSource
 import com.example.directclone2.model.ProfileRepository
+import com.example.directclone2.ui.NavigationDestination
 import com.example.directclone2.ui.components.ButtonInCommonUi
 import com.example.directclone2.ui.components.CardDividerInCommonUi
 import com.example.directclone2.ui.components.SecondaryToggleCardInCommonUi
@@ -126,5 +129,5 @@ fun SyncContent(
 @Preview(group="Test", heightDp = 800, showBackground = true)
 @Composable
 fun SyncPreview() {
-    SyncContent(vm = MainViewModel(ProfileRepository.getInstance(ProfileDiskDataSource.getInstance(File("")))))
+    SyncContent(vm = MainViewModel(FakeProfileRepository(), SavedStateHandle()))
 }

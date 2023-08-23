@@ -21,7 +21,6 @@ import androidx.compose.ui.unit.dp
 import com.example.directclone2.ui.components.CardViewInCommonUi
 import java.util.Locale
 
-
 @Composable
 fun SavedNetworksScreen(
     modifier: Modifier = Modifier,
