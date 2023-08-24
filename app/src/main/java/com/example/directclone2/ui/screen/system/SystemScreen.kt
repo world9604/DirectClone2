@@ -17,6 +17,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -28,9 +30,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.directclone2.R
 import com.example.directclone2.model.FakeProfileRepository
-import com.example.directclone2.model.ProfileDiskDataSource
-import com.example.directclone2.model.ProfileRepository
-import com.example.directclone2.ui.NavigationDestination
+import com.example.directclone2.ui.SettingViewModel
 import com.example.directclone2.ui.components.CardDividerInCommonUi
 import com.example.directclone2.ui.components.CardViewInCommonUi
 import com.example.directclone2.ui.components.CardViewItemInCommonUi
@@ -42,13 +42,16 @@ import com.example.directclone2.ui.components.RadioButtonsInCardViewInCommonUi
 import com.example.directclone2.ui.components.TextAndIconCardItemInCommonUi
 import com.example.directclone2.ui.components.TimePickerDialog
 import com.example.directclone2.ui.components.ToggleSwitchInCommonUi
-import java.io.File
 
 @Composable
 fun SystemScreen(
     modifier: Modifier = Modifier,
-    vm: SystemViewModel = viewModel(factory = SystemViewModel.Factory),
+    passProfileId: (profileId: String) -> Unit = {},
+    vm: SettingViewModel = viewModel(factory = SettingViewModel.Factory),
 ) {
+    val profileId by vm.profileId.collectAsState()
+    passProfileId(profileId)
+
     Column(
         modifier = modifier.verticalScroll(rememberScrollState())
     ) {
@@ -67,8 +70,8 @@ fun SystemScreen(
             )
             ExposedDropdownMenuForArrayResInCommonUi(
                 modifier = modifier.padding(start = 16.dp, end = 16.dp, bottom = 14.dp),
-                onClickItem = {vm.update("languages", it)},
-                currentSelectedItem = vm.uiState.languages,
+                onClickItem = {vm.updateSystem("languages", it)},
+                currentSelectedItem = vm.systemUiState.languages,
                 arrayRes = R.array.languages_options,
                 //R.array.languages_options
             )
@@ -82,8 +85,8 @@ fun SystemScreen(
                     color = MaterialTheme.colorScheme.onSurface
                 )
                 ToggleSwitchInCommonUi(
-                    checked = vm.uiState.spellChecker,
-                    onCheckedChange = {vm.update("spellChecker", it)})
+                    checked = vm.systemUiState.spellChecker,
+                    onCheckedChange = {vm.updateSystem("spellChecker", it)})
             }
             Text(
                 modifier = modifier
@@ -95,8 +98,8 @@ fun SystemScreen(
             )
             ExposedDropdownMenuForArrayResInCommonUi(
                 modifier = modifier.padding(start = 16.dp, end = 16.dp, bottom = 14.dp),
-                onClickItem = {vm.update("spellCheckLanguage", it)},
-                currentSelectedItem = vm.uiState.spellCheckLanguage,
+                onClickItem = {vm.updateSystem("spellCheckLanguage", it)},
+                currentSelectedItem = vm.systemUiState.spellCheckLanguage,
                 arrayRes = R.array.sample)
             CardDividerInCommonUi(modifier)
             Row(
@@ -121,8 +124,8 @@ fun SystemScreen(
             }
             RadioButtonsInCardViewInCommonUi(
                 modifier = modifier,
-                currentResId = vm.uiState.defaultSpellChecker.resIdOfTitle,
-                onRadioClicked = {vm.update("defaultSpellChecker", it)},
+                currentResId = vm.systemUiState.defaultSpellChecker.resIdOfTitle,
+                onRadioClicked = {vm.updateSystem("defaultSpellChecker", it)},
                 titleAndSubTitleRes = listOf(
                     Pair(
                         SystemUiState.DefaultSpellChecker.GboardSpellChecker.resIdOfTitle,
@@ -137,8 +140,8 @@ fun SystemScreen(
                 modifier = modifier
                     .padding(start = 16.dp, end = 16.dp, bottom = 20.dp)
                     .fillMaxWidth(),
-                value = vm.uiState.spellCheckPointerSpeed,
-                onValueChange = {vm.update("spellCheckPointerSpeed", it)})
+                value = vm.systemUiState.spellCheckPointerSpeed,
+                onValueChange = {vm.updateSystem("spellCheckPointerSpeed", it)})
         }
         Text(
             modifier = modifier.padding(start = 16.dp, end = 16.dp, top = 24.dp, bottom = 8.dp),
@@ -151,8 +154,8 @@ fun SystemScreen(
                     color = MaterialTheme.colorScheme.onSurface,
                     text = stringResource(R.string.use_network_provided_time_label))
                 ToggleSwitchInCommonUi(
-                    checked = vm.uiState.useNetworkProvidedTime,
-                    onCheckedChange = {vm.update("useNetworkProvidedTime", it)})
+                    checked = vm.systemUiState.useNetworkProvidedTime,
+                    onCheckedChange = {vm.updateSystem("useNetworkProvidedTime", it)})
             }
             Text(
                 modifier = modifier.padding(start = 16.dp, top = 14.dp, bottom = 8.dp),
@@ -160,9 +163,9 @@ fun SystemScreen(
                 color = MaterialTheme.colorScheme.onSurface,
                 text = stringResource(R.string.date_label)
             )
-            val openDatePickerDialog = remember { mutableStateOf(vm.uiState.openDatePickerDialog) }
+            val openDatePickerDialog = remember { mutableStateOf(vm.systemUiState.openDatePickerDialog) }
             TextAndIconCardItemInCommonUi(
-                text = vm.uiState.systemDate,
+                text = vm.systemUiState.systemDate,
                 onClickItem = {openDatePickerDialog.value = true},
                 icon = {
                     Icon(
@@ -177,9 +180,9 @@ fun SystemScreen(
                 style = MaterialTheme.typography.labelMedium,
                 color = MaterialTheme.colorScheme.onSurface,
                 text = stringResource(R.string.time_label))
-            val openTimePickerDialog = remember { mutableStateOf(vm.uiState.openTimePickerDialog) }
+            val openTimePickerDialog = remember { mutableStateOf(vm.systemUiState.openTimePickerDialog) }
             TextAndIconCardItemInCommonUi(
-                text = vm.uiState.systemTime,
+                text = vm.systemUiState.systemTime,
                 onClickItem = {openTimePickerDialog.value = true},
                 icon = {
                     Icon(
@@ -196,8 +199,8 @@ fun SystemScreen(
                     color = MaterialTheme.colorScheme.onSurface,
                     text = stringResource(R.string.use_network_provided_time_zone_label))
                 ToggleSwitchInCommonUi(
-                    checked = vm.uiState.useNetworkProvidedTimeZone,
-                    onCheckedChange = {vm.update("useNetworkProvidedTimeZone", it)})
+                    checked = vm.systemUiState.useNetworkProvidedTimeZone,
+                    onCheckedChange = {vm.updateSystem("useNetworkProvidedTimeZone", it)})
             }
             Text(
                 modifier = modifier.padding(start = 16.dp, top = 14.dp, bottom = 8.dp),
@@ -220,8 +223,8 @@ fun SystemScreen(
                     color = MaterialTheme.colorScheme.onSurface,
                     text = stringResource(R.string.use_24_hour_format_label))
                 ToggleSwitchInCommonUi(
-                    checked = vm.uiState.use24hourFormat,
-                    onCheckedChange = {vm.update("use24hourFormat", it)})
+                    checked = vm.systemUiState.use24hourFormat,
+                    onCheckedChange = {vm.updateSystem("use24hourFormat", it)})
             }
             Text(
                 modifier = modifier.padding(start = 16.dp, bottom = 8.dp),
@@ -238,8 +241,8 @@ fun SystemScreen(
             OutlinedTextFieldInCommonUi(
                 modifier = modifier.fillMaxWidth()
                     .padding(start = 16.dp, end = 16.dp, bottom = 14.dp),
-                value = vm.uiState.ntpServer,
-                onValueChange = {vm.update("ntpServer", it)})
+                value = vm.systemUiState.ntpServer,
+                onValueChange = {vm.updateSystem("ntpServer", it)})
         }
     }
 }
@@ -248,6 +251,6 @@ fun SystemScreen(
 @Composable
 fun SystemPreview() {
     SystemScreen(
-        vm = SystemViewModel(FakeProfileRepository(), SavedStateHandle())
+        vm = SettingViewModel(FakeProfileRepository(), SavedStateHandle())
     )
 }

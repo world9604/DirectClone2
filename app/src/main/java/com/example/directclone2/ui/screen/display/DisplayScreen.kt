@@ -11,6 +11,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -20,21 +22,22 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.directclone2.R
 import com.example.directclone2.model.FakeProfileRepository
-import com.example.directclone2.model.ProfileDiskDataSource
-import com.example.directclone2.model.ProfileRepository
-import com.example.directclone2.ui.NavigationDestination
+import com.example.directclone2.ui.SettingViewModel
 import com.example.directclone2.ui.components.CardDividerInCommonUi
 import com.example.directclone2.ui.components.CardViewInCommonUi
 import com.example.directclone2.ui.components.CardViewItemInCommonUi
 import com.example.directclone2.ui.components.ToggleSwitchInCommonUi
 import com.example.directclone2.ui.components.RadioButtonsInCardViewInCommonUi
-import java.io.File
 
 @Composable
 fun DisplayScreen(
     modifier: Modifier = Modifier,
-    vm: DisplayViewModel = viewModel(factory = DisplayViewModel.Factory),
+    passProfileId: (profileId: String) -> Unit = {},
+    vm: SettingViewModel = viewModel(factory = SettingViewModel.Factory),
 ) {
+    val profileId by vm.profileId.collectAsState()
+    passProfileId(profileId)
+
     Column(
         modifier = modifier.verticalScroll(rememberScrollState())
     ) {
@@ -55,8 +58,8 @@ fun DisplayScreen(
                             color = MaterialTheme.colorScheme.onTertiaryContainer)
                     }
                     Slider(
-                        value = vm.uiState.screenBrightness,
-                        onValueChange = {vm.update("screenBrightness", it)})
+                        value = vm.displayUiState.screenBrightness,
+                        onValueChange = {vm.updateDisplay("screenBrightness", it)})
                 }
             }
 
@@ -74,8 +77,8 @@ fun DisplayScreen(
                             text = stringResource(R.string.adaptive_brightness_label)
                         )
                         ToggleSwitchInCommonUi(
-                            checked = vm.uiState.adaptiveBrightness,
-                            onCheckedChange = {vm.update("adaptiveBrightness", it)})
+                            checked = vm.displayUiState.adaptiveBrightness,
+                            onCheckedChange = {vm.updateDisplay("adaptiveBrightness", it)})
                     }
                     Text(
                         style = MaterialTheme.typography.labelSmall,
@@ -90,8 +93,8 @@ fun DisplayScreen(
                     text = stringResource(R.string.auto_rotate_screen_label)
                 )
                 ToggleSwitchInCommonUi(
-                    checked = vm.uiState.autoScreenRotate,
-                    onCheckedChange = {vm.update("autoScreenRotate", it)})
+                    checked = vm.displayUiState.autoScreenRotate,
+                    onCheckedChange = {vm.updateDisplay("autoScreenRotate", it)})
             }
         }
 
@@ -104,8 +107,8 @@ fun DisplayScreen(
             )
             RadioButtonsInCardViewInCommonUi(
                 modifier = modifier,
-                onRadioClicked = {vm.update("touchSensitivity", it)},
-                currentResId = vm.uiState.touchSensitivity.resIdOfTitle,
+                onRadioClicked = {vm.updateDisplay("touchSensitivity", it)},
+                currentResId = vm.displayUiState.touchSensitivity.resIdOfTitle,
                 titleAndSubTitleRes = listOf(
                     Pair(DisplayUiState.TouchSensitivity.Short.resIdOfTitle, DisplayUiState.TouchSensitivity.Short.resIdOfSubTitle),
                     Pair(DisplayUiState.TouchSensitivity.Medium.resIdOfTitle, DisplayUiState.TouchSensitivity.Medium.resIdOfSubTitle),
@@ -121,8 +124,8 @@ fun DisplayScreen(
             )
             RadioButtonsInCardViewInCommonUi(
                 modifier = modifier,
-                onRadioClicked = {vm.update("systemFontSize", it)},
-                currentResId = vm.uiState.systemFontSize.resIdOfTitle,
+                onRadioClicked = {vm.updateDisplay("systemFontSize", it)},
+                currentResId = vm.displayUiState.systemFontSize.resIdOfTitle,
                 titleAndSubTitleRes = listOf(
                     Pair(DisplayUiState.SystemFontSize.Small.resIdOfTitle, DisplayUiState.SystemFontSize.Small.resIdOfSubTitle),
                     Pair(DisplayUiState.SystemFontSize.Default.resIdOfTitle, DisplayUiState.SystemFontSize.Default.resIdOfSubTitle),
@@ -139,8 +142,8 @@ fun DisplayScreen(
             )
             RadioButtonsInCardViewInCommonUi(
                 modifier = modifier,
-                onRadioClicked = {vm.update("systemDisplaySize", it)},
-                currentResId = vm.uiState.systemDisplaySize.resIdOfTitle,
+                onRadioClicked = {vm.updateDisplay("systemDisplaySize", it)},
+                currentResId = vm.displayUiState.systemDisplaySize.resIdOfTitle,
                 titleAndSubTitleRes = listOf(
                     Pair(DisplayUiState.SystemDisplaySize.Small.resIdOfTitle, DisplayUiState.SystemDisplaySize.Small.resIdOfSubTitle),
                     Pair(DisplayUiState.SystemDisplaySize.Default.resIdOfTitle, DisplayUiState.SystemDisplaySize.Default.resIdOfSubTitle),
@@ -154,6 +157,6 @@ fun DisplayScreen(
 @Composable
 fun DisplayPreview() {
     DisplayScreen(
-        vm = DisplayViewModel(FakeProfileRepository(), SavedStateHandle())
+        vm = SettingViewModel(FakeProfileRepository(), SavedStateHandle())
     )
 }

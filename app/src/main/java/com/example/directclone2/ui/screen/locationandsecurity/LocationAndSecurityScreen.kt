@@ -10,16 +10,15 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.directclone2.R
 import com.example.directclone2.model.FakeProfileRepository
-import com.example.directclone2.model.ProfileDiskDataSource
-import com.example.directclone2.model.ProfileRepository
-import com.example.directclone2.ui.NavigationDestination
+import com.example.directclone2.ui.SettingViewModel
 import com.example.directclone2.ui.components.CardDividerInCommonUi
 import com.example.directclone2.ui.components.CardViewInCommonUi
 import com.example.directclone2.ui.components.CardViewItemInCommonUi
@@ -28,13 +27,16 @@ import com.example.directclone2.ui.components.OutlinedTextFieldInCommonUi
 import com.example.directclone2.ui.components.RadioButtonsWithContentsInCardViewInCommonUi
 import com.example.directclone2.ui.components.SecondaryCardInCommonUi
 import com.example.directclone2.ui.components.ToggleSwitchInCommonUi
-import java.io.File
 
 @Composable
 fun LocationAndSecurityScreen(
     modifier: Modifier = Modifier,
-    vm: LocationAndSecurityViewModel = viewModel(factory = LocationAndSecurityViewModel.Factory),
+    passProfileId: (profileId: String) -> Unit = {},
+    vm: SettingViewModel = viewModel(factory = SettingViewModel.Factory),
 ) {
+    val profileId by vm.profileId.collectAsState()
+    passProfileId(profileId)
+
     Column(
         modifier = modifier.verticalScroll(rememberScrollState())
     ) {
@@ -42,8 +44,8 @@ fun LocationAndSecurityScreen(
             CardViewItemInCommonUi(modifier = modifier) {
                 Text(text = "Use location")
                 ToggleSwitchInCommonUi(
-                    checked = vm.uiState.useLocation,
-                    onCheckedChange = {vm.update("useLocation", it)}
+                    checked = vm.locationAndSecurityUiState.useLocation,
+                    onCheckedChange = {vm.updateScreenLock("useLocation", it)}
                 )
             }
         }
@@ -70,8 +72,8 @@ fun LocationAndSecurityScreen(
             OutlinedTextFieldInCommonUi(
                 modifier = modifier.fillMaxWidth()
                     .padding(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 16.dp),
-                value = vm.uiState.currentScreenLockPinOrPassword,
-                onValueChange = {vm.update("currentScreenLockPinOrPassword", it)})
+                value = vm.locationAndSecurityUiState.currentScreenLockPinOrPassword,
+                onValueChange = {vm.updateScreenLock("currentScreenLockPinOrPassword", it)})
         }
         SecondaryCardInCommonUi { modifier ->
             Text(
@@ -88,7 +90,7 @@ fun LocationAndSecurityScreen(
                 text = "Choose Screen Lock")
             RadioButtonsWithContentsInCardViewInCommonUi(
                 modifier = modifier,
-                currentResId = vm.uiState.screenLock.resIdOfTitle,
+                currentResId = vm.locationAndSecurityUiState.screenLock.resIdOfTitle,
                 onRadioClicked = vm::updateScreenLock,
                 resAndContents = arrayOf(
                     Triple(LocationAndSecurityUiState.ScreenLock.None.resIdOfTitle,
@@ -104,8 +106,8 @@ fun LocationAndSecurityScreen(
                         ) {
                             OutlinedTextFieldInCommonUi(
                                 modifier = modifier.fillMaxWidth(),
-                                value = vm.uiState.screenLockPin,
-                                onValueChange = {vm.update("screenLockPin", it)}
+                                value = vm.locationAndSecurityUiState.screenLockPin,
+                                onValueChange = {vm.updateScreenLock("screenLockPin", it)}
                             )
                         }
                     },
@@ -118,8 +120,8 @@ fun LocationAndSecurityScreen(
                         ) {
                             OutlinedTextFieldInCommonUi(
                                 modifier = modifier.fillMaxWidth(),
-                                value = vm.uiState.screenLockPassword,
-                                onValueChange = {vm.update("screenLockPassword", it)}
+                                value = vm.locationAndSecurityUiState.screenLockPassword,
+                                onValueChange = {vm.updateScreenLock("screenLockPassword", it)}
                             )
                         }
                     },
@@ -143,8 +145,8 @@ fun LocationAndSecurityScreen(
             OutlinedTextFieldInCommonUi(
                 modifier = modifier.fillMaxWidth()
                     .padding(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 16.dp),
-                value = vm.uiState.screenLockMessage,
-                onValueChange = {vm.update("screenLockMessage", it)})
+                value = vm.locationAndSecurityUiState.screenLockMessage,
+                onValueChange = {vm.updateScreenLock("screenLockMessage", it)})
         }
         SecondaryCardInCommonUi { modifier ->
             Text(
@@ -163,8 +165,8 @@ fun LocationAndSecurityScreen(
                 text = "Lock After Screen Timeout")
             ExposedDropdownMenuInCommonUi(
                 modifier = modifier.padding(start = 16.dp, end = 16.dp),
-                currentResId = vm.uiState.lockAfterScreenTimeout.resIdOfTitle,
-                onClickItem = {vm.update("lockAfterScreenTimeout", it)},
+                currentResId = vm.locationAndSecurityUiState.lockAfterScreenTimeout.resIdOfTitle,
+                onClickItem = {vm.updateScreenLock("lockAfterScreenTimeout", it)},
                 itemRes = listOf(
                     LocationAndSecurityUiState.LockAfterScreenTimeout.Immediately.resIdOfTitle,
                     LocationAndSecurityUiState.LockAfterScreenTimeout.Sec5.resIdOfTitle,
@@ -185,8 +187,8 @@ fun LocationAndSecurityScreen(
                 text = "Power Button Instantly Locks")
             ExposedDropdownMenuInCommonUi(
                 modifier = modifier.padding(start = 16.dp, end = 16.dp, bottom = 30.dp),
-                currentResId = vm.uiState.powerButtonInstantlyLocks.resIdOfTitle,
-                onClickItem = {vm.update("powerButtonInstantlyLocks", it)},
+                currentResId = vm.locationAndSecurityUiState.powerButtonInstantlyLocks.resIdOfTitle,
+                onClickItem = {vm.updateScreenLock("powerButtonInstantlyLocks", it)},
                 itemRes = listOf(
                     LocationAndSecurityUiState.PowerButtonInstantlyLocks.Disable.resIdOfTitle,
                     LocationAndSecurityUiState.PowerButtonInstantlyLocks.Enable.resIdOfTitle))
@@ -204,6 +206,6 @@ fun LocationAndSecurityScreen(
 @Composable
 fun LocationAndSecurityPreview() {
     LocationAndSecurityScreen(
-        vm = LocationAndSecurityViewModel(FakeProfileRepository(), SavedStateHandle())
+        vm = SettingViewModel(FakeProfileRepository(), SavedStateHandle())
     )
 }

@@ -10,17 +10,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.directclone2.model.FakeProfileRepository
-import com.example.directclone2.model.ProfileDiskDataSource
-import com.example.directclone2.model.ProfileRepository
-import com.example.directclone2.ui.NavigationDestination
-import com.example.directclone2.ui.screen.battery.BatteryViewModel
-import java.io.File
+import com.example.directclone2.ui.SettingViewModel
 
 
 @Composable
 fun MainScreen(
     modifier: Modifier = Modifier,
-    vm: MainViewModel = viewModel(factory = MainViewModel.Factory),
+    vm: SettingViewModel = viewModel(factory = SettingViewModel.Factory),
     onAppClicked: () -> Unit = {}
 ) {
     Scaffold(
@@ -52,5 +48,5 @@ fun MainScreen(
 @Preview(group="Work", showBackground = true)
 @Composable
 fun MainScreenPreview(){
-    MainScreen(vm = MainViewModel(FakeProfileRepository(), SavedStateHandle()))
+    MainScreen(vm = SettingViewModel(FakeProfileRepository(), SavedStateHandle()))
 }

@@ -47,29 +47,19 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.directclone2.R
 import com.example.directclone2.model.FakeProfileRepository
-import com.example.directclone2.model.ProfileDiskDataSource
-import com.example.directclone2.model.ProfileRepository
-import com.example.directclone2.ui.NavigationDestination
+import com.example.directclone2.ui.SettingViewModel
 import com.example.directclone2.ui.components.ButtonInCommonUi
 import com.example.directclone2.ui.components.CardDividerInCommonUi
 import com.example.directclone2.ui.components.CardViewInCommonUi
 import com.example.directclone2.ui.components.CheckBoxInCommonUi
 import com.example.directclone2.ui.components.OutlinedTextFieldInCommonUi
-import java.io.File
 import java.util.Locale
 
-object BackupContentDestination : NavigationDestination {
-    override val route = "backup_content"
-    override val titleRes = R.string.app_name
-    const val profileIdArg = "profileId"
-    const val isInSettingScreen = false
-    val routeWithArgs = "$route/{$profileIdArg}"
-}
 
 @Composable
 fun BackupContent(
     modifier: Modifier = Modifier,
-    vm: MainViewModel = viewModel(factory = MainViewModel.Factory),
+    vm: SettingViewModel = viewModel(factory = SettingViewModel.Factory),
     onAppClicked: () -> Unit = {}
 ) {
     Column(
@@ -102,9 +92,9 @@ fun BackupContent(
                     onAppClicked = onAppClicked)
             }
         }
-        if (vm.uiState.openBackupDialog) BackupDialog(vm)
-        if (vm.uiState.openSetPasswordDialog) SetPasswordDialog(vm)
-        if (vm.uiState.openBackupResultDialog) BackupResultDialog(vm)
+        if (vm.mainUiState.openBackupDialog) BackupDialog(vm)
+        if (vm.mainUiState.openSetPasswordDialog) SetPasswordDialog(vm)
+        if (vm.mainUiState.openBackupResultDialog) BackupResultDialog(vm)
     }
     Box(modifier = Modifier.fillMaxSize()) {
         ButtonInCommonUi(
@@ -112,7 +102,7 @@ fun BackupContent(
             enabled = vm.haveAtLeastOneAppToBackUp(),
             containerColor = MaterialTheme.colorScheme.primary,
             onClick = {
-                vm.update("openBackupDialog", true)
+                vm.updateMain("openBackupDialog", true)
                 vm.initIsCompletedCreateBackupFile()
             }
         ) {
@@ -125,9 +115,9 @@ fun BackupContent(
 }
 
 @Composable
-private fun BackupResultDialog(vm: MainViewModel) {
+private fun BackupResultDialog(vm: SettingViewModel) {
     data class MultiComponent(val x: String, val y: String, val z: String, val a: Color)
-    val (title, subTitle, btnText, btnColor) = when (vm.uiState.isCompletedCreateBackupFile) {
+    val (title, subTitle, btnText, btnColor) = when (vm.mainUiState.isCompletedCreateBackupFile) {
         true -> MultiComponent(
             stringResource(R.string.backup_content_backup_result_dialog_title_label),
             stringResource(R.string.backup_content_backup_result_dialog_sub_title_label),
@@ -186,7 +176,7 @@ private fun BackupResultDialog(vm: MainViewModel) {
                 ) {
                     ButtonInCommonUi(
                         modifier = Modifier.fillMaxWidth(),
-                        onClick = {vm.update("openBackupResultDialog", false)},
+                        onClick = {vm.updateMain("openBackupResultDialog", false)},
                         containerColor = btnColor
                     ) {
                         Text(style = MaterialTheme.typography.displayLarge,
@@ -199,7 +189,7 @@ private fun BackupResultDialog(vm: MainViewModel) {
 }
 
 @Composable
-private fun SetPasswordDialog(vm: MainViewModel) {
+private fun SetPasswordDialog(vm: SettingViewModel) {
     Dialog(onDismissRequest = {}) {
         Box(
             Modifier.background(
@@ -221,15 +211,15 @@ private fun SetPasswordDialog(vm: MainViewModel) {
                 Row(Modifier.padding(bottom = 8.dp)) {
                     OutlinedTextFieldInCommonUi(
                         modifier = Modifier.fillMaxWidth(),
-                        value = vm.uiState.password,
-                        onValueChange = {vm.update("password", it)},
+                        value = vm.mainUiState.password,
+                        onValueChange = {vm.updateMain("password", it)},
                         placeholderText = "Enter password.")
                 }
                 Row(Modifier.padding(bottom = 28.dp)) {
                     OutlinedTextFieldInCommonUi(
                         modifier = Modifier.fillMaxWidth(),
-                        value = vm.uiState.confirmPassword,
-                        onValueChange = {vm.update("confirmPassword", it)},
+                        value = vm.mainUiState.confirmPassword,
+                        onValueChange = {vm.updateMain("confirmPassword", it)},
                         placeholderText = "Confirm password.")
                 }
                 Row(
@@ -243,7 +233,7 @@ private fun SetPasswordDialog(vm: MainViewModel) {
                             .width(144.dp)
                             .padding(end = 8.dp),
                         containerColor = MaterialTheme.colorScheme.onTertiaryContainer,
-                        onClick = { vm.update("openSetPasswordDialog", false) }
+                        onClick = { vm.updateMain("openSetPasswordDialog", false) }
                     ) {
                         Text(
                             style = MaterialTheme.typography.displayLarge,
@@ -256,8 +246,8 @@ private fun SetPasswordDialog(vm: MainViewModel) {
                         enabled = vm.matchPasswordAndConfirmPassword(),
                         containerColor = MaterialTheme.colorScheme.primary,
                         onClick = {
-                            vm.update("openSetPasswordDialog", false)
-                            vm.update("openBackupResultDialog", true)
+                            vm.updateMain("openSetPasswordDialog", false)
+                            vm.updateMain("openBackupResultDialog", true)
                             vm.save()
                         }
                     ) {
@@ -272,7 +262,7 @@ private fun SetPasswordDialog(vm: MainViewModel) {
 }
 
 @Composable
-private fun BackupDialog(vm: MainViewModel) {
+private fun BackupDialog(vm: SettingViewModel) {
     Dialog(onDismissRequest = {}) {
         Box(
             Modifier.background(
@@ -340,8 +330,8 @@ private fun BackupDialog(vm: MainViewModel) {
                                 colors = RadioButtonDefaults.colors(
                                     selectedColor = MaterialTheme.colorScheme.secondary,
                                     unselectedColor = MaterialTheme.colorScheme.tertiary),
-                                selected = vm.uiState.isInternalStorage,
-                                onClick = {vm.update("isInternalStorage", true)})
+                                selected = vm.mainUiState.isInternalStorage,
+                                onClick = {vm.updateMain("isInternalStorage", true)})
                             Text(
                                 style = MaterialTheme.typography.labelSmall,
                                 color = MaterialTheme.colorScheme.onTertiaryContainer,
@@ -355,8 +345,8 @@ private fun BackupDialog(vm: MainViewModel) {
                                 colors = RadioButtonDefaults.colors(
                                     selectedColor = MaterialTheme.colorScheme.secondary,
                                     unselectedColor = MaterialTheme.colorScheme.tertiary),
-                                selected = !vm.uiState.isInternalStorage,
-                                onClick = {vm.update("isInternalStorage", false)})
+                                selected = !vm.mainUiState.isInternalStorage,
+                                onClick = {vm.updateMain("isInternalStorage", false)})
                             Text(
                                 style = MaterialTheme.typography.labelSmall,
                                 color = MaterialTheme.colorScheme.onTertiaryContainer,
@@ -375,7 +365,7 @@ private fun BackupDialog(vm: MainViewModel) {
                         Text(
                             style = MaterialTheme.typography.labelSmall,
                             color = MaterialTheme.colorScheme.onTertiaryContainer,
-                            text = "• ${vm.uiState.parentSaveDirectoryForBackupFile}")
+                            text = "• ${vm.mainUiState.parentSaveDirectoryForBackupFile}")
                     }
                 }
                 Row(
@@ -388,8 +378,8 @@ private fun BackupDialog(vm: MainViewModel) {
                         color = MaterialTheme.colorScheme.onBackground,
                         text = "• Set password : ")
                     CheckBoxInCommonUi(
-                        checked = vm.uiState.usePassword,
-                        onCheckedChange = { vm.update("usePassword", it) })
+                        checked = vm.mainUiState.usePassword,
+                        onCheckedChange = { vm.updateMain("usePassword", it) })
                 }
                 Row(
                     modifier = Modifier
@@ -403,7 +393,7 @@ private fun BackupDialog(vm: MainViewModel) {
                             .height(48.dp)
                             .width(144.dp),
                         containerColor = MaterialTheme.colorScheme.onTertiaryContainer,
-                        onClick = {vm.update("openBackupDialog", false)}
+                        onClick = {vm.updateMain("openBackupDialog", false)}
                     ) {
                         Text(
                             style = MaterialTheme.typography.displayLarge,
@@ -415,7 +405,7 @@ private fun BackupDialog(vm: MainViewModel) {
                             .width(144.dp),
                         containerColor = MaterialTheme.colorScheme.primary,
                         onClick = {
-                            vm.update("openBackupDialog", false)
+                            vm.updateMain("openBackupDialog", false)
                             vm.openBackupResultDialog() }
                     ) {
                         Text(
@@ -435,7 +425,7 @@ private fun AppsForBackupList(
     onClick: () -> Unit,
     apps: List<AppItem>,
     clicked: Boolean = true,
-    vm: MainViewModel,
+    vm: SettingViewModel,
     onAppClicked: () -> Unit = {},
 )  {
     AppsForBackupToggleCard(title, subTitle, clicked, onClick)
@@ -456,7 +446,7 @@ private fun AppsForBackupList(
 @Composable
 fun AppsForBackupItem(
     app: AppItem,
-    vm: MainViewModel,
+    vm: SettingViewModel,
     onAppClicked: () -> Unit = {},
 ) {
     Row(
@@ -537,5 +527,5 @@ private fun AppsForBackupToggleCard(
 @Preview(group = "Work", heightDp = 800, showBackground = true)
 @Composable
 fun BackupContentPreview() {
-    BackupContent(vm = MainViewModel(FakeProfileRepository(), SavedStateHandle()))
+    BackupContent(vm = SettingViewModel(FakeProfileRepository(), SavedStateHandle()))
 }

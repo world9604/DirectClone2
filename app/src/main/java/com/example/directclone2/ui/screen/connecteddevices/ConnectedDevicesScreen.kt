@@ -7,6 +7,8 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -15,19 +17,20 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.directclone2.R
 import com.example.directclone2.model.FakeProfileRepository
-import com.example.directclone2.model.ProfileDiskDataSource
-import com.example.directclone2.model.ProfileRepository
-import com.example.directclone2.ui.NavigationDestination
+import com.example.directclone2.ui.SettingViewModel
 import com.example.directclone2.ui.components.CardViewInCommonUi
 import com.example.directclone2.ui.components.CardViewItemInCommonUi
 import com.example.directclone2.ui.components.ToggleSwitchInCommonUi
-import java.io.File
 
 @Composable
 fun ConnectedDevicesScreen(
     modifier: Modifier = Modifier,
-    vm: ConnectedDevicesViewModel = viewModel(factory = ConnectedDevicesViewModel.Factory),
+    passProfileId: (profileId: String) -> Unit = {},
+    vm: SettingViewModel = viewModel(factory = SettingViewModel.Factory),
 ) {
+    val profileId by vm.profileId.collectAsState()
+    passProfileId(profileId)
+
     Column(
         modifier = modifier.verticalScroll(rememberScrollState())
     ) {
@@ -43,8 +46,8 @@ fun ConnectedDevicesScreen(
                     color = MaterialTheme.colorScheme.onSurface,
                     text = stringResource(R.string.bluetooth_label))
                 ToggleSwitchInCommonUi(
-                    checked = vm.uiState.bluetooth,
-                    onCheckedChange = {vm.update("bluetooth", it)}
+                    checked = vm.connectedDevicesUiState.bluetooth,
+                    onCheckedChange = {vm.updateConnectedDevices("bluetooth", it)}
                 )
             }
             CardViewItemInCommonUi(modifier = modifier) {
@@ -52,8 +55,8 @@ fun ConnectedDevicesScreen(
                     style = MaterialTheme.typography.labelMedium,
                     text = stringResource(R.string.nfc_label))
                 ToggleSwitchInCommonUi(
-                    checked = vm.uiState.nfc,
-                    onCheckedChange = {vm.update("nfc", it)}
+                    checked = vm.connectedDevicesUiState.nfc,
+                    onCheckedChange = {vm.updateConnectedDevices("nfc", it)}
                 )
             }
         }
@@ -64,6 +67,6 @@ fun ConnectedDevicesScreen(
 @Composable
 fun ConnectedDevicesPreview() {
     ConnectedDevicesScreen(
-        vm = ConnectedDevicesViewModel(FakeProfileRepository(), SavedStateHandle())
+        vm = SettingViewModel(FakeProfileRepository(), SavedStateHandle())
     )
 }

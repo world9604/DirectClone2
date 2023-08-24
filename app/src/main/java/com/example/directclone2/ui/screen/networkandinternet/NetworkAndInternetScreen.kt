@@ -8,14 +8,15 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.directclone2.R
 import com.example.directclone2.model.FakeProfileRepository
-import com.example.directclone2.ui.NavigationDestination
+import com.example.directclone2.ui.SettingViewModel
 import com.example.directclone2.ui.components.CardViewInCommonUi
 import com.example.directclone2.ui.components.CardViewItemInCommonUi
 import com.example.directclone2.ui.components.ToggleSwitchInCommonUi
@@ -23,8 +24,11 @@ import com.example.directclone2.ui.components.ToggleSwitchInCommonUi
 @Composable
 fun NetworkAndInternetScreen(
     modifier: Modifier = Modifier,
-    vm: NetworkAndInternetViewModel = viewModel(factory = NetworkAndInternetViewModel.Factory),
+    passProfileId: (profileId: String) -> Unit = {},
+    vm: SettingViewModel = viewModel(factory = SettingViewModel.Factory),
 ) {
+    val profileId by vm.profileId.collectAsState()
+    passProfileId(profileId)
 
     Column(
         modifier = modifier.verticalScroll(rememberScrollState())
@@ -36,8 +40,10 @@ fun NetworkAndInternetScreen(
                     color = MaterialTheme.colorScheme.onSurface,
                     text = "Wi-Fi")
                 ToggleSwitchInCommonUi(
-                    checked = vm.uiState.wifi,
-                    onCheckedChange = {vm.update("wifi", it)}
+                    checked = vm.networkAndInternetUiState.wifi,
+                    onCheckedChange = {
+                        vm.updateNetworkAndInternet("wifi", it)
+                    }
                 )
             }
             CardViewItemInCommonUi(modifier) {
@@ -61,8 +67,8 @@ fun NetworkAndInternetScreen(
                     color = MaterialTheme.colorScheme.onSurface,
                     text = "Data Server")
                 ToggleSwitchInCommonUi(
-                    checked = vm.uiState.dataServer,
-                    onCheckedChange = {vm.update("dataServer", it)}
+                    checked = vm.networkAndInternetUiState.dataServer,
+                    onCheckedChange = {vm.updateNetworkAndInternet("dataServer", it)}
                 )
             }
             CardViewItemInCommonUi(modifier) {
@@ -71,8 +77,8 @@ fun NetworkAndInternetScreen(
                     color = MaterialTheme.colorScheme.onSurface,
                     text = "Roaming")
                 ToggleSwitchInCommonUi(
-                    checked = vm.uiState.roaming,
-                    onCheckedChange = {vm.update("roaming", it)}
+                    checked = vm.networkAndInternetUiState.roaming,
+                    onCheckedChange = {vm.updateNetworkAndInternet("roaming", it)}
                 )
             }
             CardViewItemInCommonUi(modifier) {
@@ -104,6 +110,6 @@ fun NetworkAndInternetScreen(
 @Composable
 fun NetworkAndInternetPreview() {
     NetworkAndInternetScreen(
-        vm = NetworkAndInternetViewModel(FakeProfileRepository(), SavedStateHandle())
+        vm = SettingViewModel(FakeProfileRepository(), SavedStateHandle())
     )
 }

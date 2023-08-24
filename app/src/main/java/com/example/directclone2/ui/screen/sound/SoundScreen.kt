@@ -11,6 +11,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -21,24 +22,24 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.directclone2.R
 import com.example.directclone2.model.FakeProfileRepository
-import com.example.directclone2.model.ProfileDiskDataSource
-import com.example.directclone2.model.ProfileRepository
-import com.example.directclone2.ui.NavigationDestination
+import com.example.directclone2.ui.SettingViewModel
 import com.example.directclone2.ui.components.CardDividerInCommonUi
 import com.example.directclone2.ui.components.CardViewInCommonUi
 import com.example.directclone2.ui.components.CardViewItemInCommonUi
 import com.example.directclone2.ui.components.RadioButtonsInCardViewInCommonUi
 import com.example.directclone2.ui.components.SecondaryToggleCardInCommonUi
 import com.example.directclone2.ui.components.ToggleSwitchInCommonUi
-import java.io.File
 
 @Composable
 fun SoundScreen(
     modifier: Modifier = Modifier,
-    vm: SoundViewModel = viewModel(factory = SoundViewModel.Factory),
+    passProfileId: (profileId: String) -> Unit = {},
+    vm: SettingViewModel = viewModel(factory = SettingViewModel.Factory),
 ) {
+    val profileId by vm.profileId.collectAsState()
+    passProfileId(profileId)
+
     Column(
         modifier = modifier.verticalScroll(rememberScrollState())
     ) {
@@ -59,8 +60,8 @@ fun SoundScreen(
                 modifier = modifier
                     .padding(start = 16.dp, end = 16.dp, bottom = 11.dp)
                     .fillMaxWidth(),
-                value = vm.uiState.musicVolume,
-                onValueChange = {vm.update("musicVolume", it)})
+                value = vm.soundUiState.musicVolume,
+                onValueChange = {vm.updateSound("musicVolume", it)})
             CardDividerInCommonUi(modifier = modifier)
             Row(
                 modifier = modifier
@@ -78,8 +79,8 @@ fun SoundScreen(
                 modifier = modifier
                     .padding(start = 16.dp, end = 16.dp, bottom = 11.dp)
                     .fillMaxWidth(),
-                value = vm.uiState.callVolume,
-                onValueChange = {vm.update("callVolume", it)})
+                value = vm.soundUiState.callVolume,
+                onValueChange = {vm.updateSound("callVolume", it)})
             CardDividerInCommonUi(modifier = modifier)
             Row(
                 modifier = modifier
@@ -97,8 +98,8 @@ fun SoundScreen(
                 modifier = modifier
                     .padding(start = 16.dp, end = 16.dp, bottom = 11.dp)
                     .fillMaxWidth(),
-                value = vm.uiState.alarmVolume,
-                onValueChange = {vm.update("alarmVolume", it)})
+                value = vm.soundUiState.alarmVolume,
+                onValueChange = {vm.updateSound("alarmVolume", it)})
             CardDividerInCommonUi(modifier = modifier)
             Row(
                 modifier = modifier
@@ -116,8 +117,8 @@ fun SoundScreen(
                 modifier = modifier
                     .padding(start = 16.dp, end = 16.dp, bottom = 11.dp)
                     .fillMaxWidth(),
-                value = vm.uiState.notificationVolume,
-                onValueChange = {vm.update("notificationVolume", it)})
+                value = vm.soundUiState.notificationVolume,
+                onValueChange = {vm.updateSound("notificationVolume", it)})
             CardDividerInCommonUi(modifier = modifier)
             Text(
                 modifier = modifier.padding(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 13.dp),
@@ -126,8 +127,8 @@ fun SoundScreen(
                 text = "Vibrate for calls")
             RadioButtonsInCardViewInCommonUi(
                 modifier = modifier,
-                onRadioClicked = {vm.update("vibrateOnTouch", it)},
-                currentResId = vm.uiState.vibrateOnTouch.resIdOfTitle,
+                onRadioClicked = {vm.updateSound("vibrateOnTouch", it)},
+                currentResId = vm.soundUiState.vibrateOnTouch.resIdOfTitle,
                 titleAndSubTitleRes = listOf(
                     Pair(
                         SoundUiState.VibrateOnTouch.Enable.resIdOfTitle,
@@ -161,8 +162,8 @@ fun SoundScreen(
                 color = MaterialTheme.colorScheme.primary,
                 text = "Conversations that can interrupt")
             RadioButtonsInCardViewInCommonUi(
-                onRadioClicked = {vm.update("conversations", it)},
-                currentResId = vm.uiState.conversations.resIdOfTitle,
+                onRadioClicked = {vm.updateSound("conversations", it)},
+                currentResId = vm.soundUiState.conversations.resIdOfTitle,
                 titleAndSubTitleRes = listOf(
                     Pair(SoundUiState.Conversations.AllConversations.resIdOfTitle, SoundUiState.Conversations.AllConversations.resIdOfSubTitle),
                     Pair(SoundUiState.Conversations.PriorityConversations.resIdOfTitle, SoundUiState.Conversations.PriorityConversations.resIdOfSubTitle),
@@ -180,8 +181,8 @@ fun SoundScreen(
                 color = MaterialTheme.colorScheme.primary,
                 text = "Calls that can interrupt")
             RadioButtonsInCardViewInCommonUi(
-                currentResId = vm.uiState.calls.resIdOfTitle,
-                onRadioClicked = {vm.update("calls", it)},
+                currentResId = vm.soundUiState.calls.resIdOfTitle,
+                onRadioClicked = {vm.updateSound("calls", it)},
                 titleAndSubTitleRes = listOf(
                     Pair(SoundUiState.Calls.StarredContacts.resIdOfTitle, SoundUiState.Calls.StarredContacts.resIdOfSubTitle),
                     Pair(SoundUiState.Calls.Contacts.resIdOfTitle, SoundUiState.Calls.Contacts.resIdOfSubTitle),
@@ -200,8 +201,8 @@ fun SoundScreen(
                 color = MaterialTheme.colorScheme.primary,
                 text = "Messages that can interrupt")
             RadioButtonsInCardViewInCommonUi(
-                currentResId = vm.uiState.messages.resIdOfTitle,
-                onRadioClicked = {vm.update("messages", it)},
+                currentResId = vm.soundUiState.messages.resIdOfTitle,
+                onRadioClicked = {vm.updateSound("messages", it)},
                 titleAndSubTitleRes = listOf(
                     Pair(SoundUiState.Messages.StarredContacts.resIdOfTitle, SoundUiState.Messages.StarredContacts.resIdOfSubTitle),
                     Pair(SoundUiState.Messages.Contacts.resIdOfTitle, SoundUiState.Messages.Contacts.resIdOfSubTitle),
@@ -237,8 +238,8 @@ fun SoundScreen(
                         color = MaterialTheme.colorScheme.onBackground,
                         text = "Alarms")
                     ToggleSwitchInCommonUi(
-                        checked = vm.uiState.alarms,
-                        onCheckedChange = { vm.update("alarms", it) })
+                        checked = vm.soundUiState.alarms,
+                        onCheckedChange = { vm.updateSound("alarms", it) })
                 }
             }
             CardDividerInCommonUi(modifier)
@@ -254,8 +255,8 @@ fun SoundScreen(
                             color = MaterialTheme.colorScheme.onBackground,
                             text = "Media sounds")
                         ToggleSwitchInCommonUi(
-                            checked = vm.uiState.mediaSounds,
-                            onCheckedChange = { vm.update("mediaSounds", it) })
+                            checked = vm.soundUiState.mediaSounds,
+                            onCheckedChange = { vm.updateSound("mediaSounds", it) })
                     }
                     Text(
                         style = MaterialTheme.typography.displayMedium,
@@ -276,8 +277,8 @@ fun SoundScreen(
                             text = "Touch sounds"
                         )
                         ToggleSwitchInCommonUi(
-                            checked = vm.uiState.touchSounds,
-                            onCheckedChange = { vm.update("touchSounds", it) })
+                            checked = vm.soundUiState.touchSounds,
+                            onCheckedChange = { vm.updateSound("touchSounds", it) })
                     }
                     Text(
                         style = MaterialTheme.typography.displayMedium,
@@ -296,8 +297,8 @@ fun SoundScreen(
                         color = MaterialTheme.colorScheme.onBackground,
                         text = "Reminders")
                     ToggleSwitchInCommonUi(
-                        checked = vm.uiState.reminders,
-                        onCheckedChange = { vm.update("reminders", it) })
+                        checked = vm.soundUiState.reminders,
+                        onCheckedChange = { vm.updateSound("reminders", it) })
                 }
             }
             CardViewItemInCommonUi(modifier) {
@@ -310,8 +311,8 @@ fun SoundScreen(
                         color = MaterialTheme.colorScheme.onBackground,
                         text = "Calendar events")
                     ToggleSwitchInCommonUi(
-                        checked = vm.uiState.calendarEvents,
-                        onCheckedChange = { vm.update("calendarEvents", it) })
+                        checked = vm.soundUiState.calendarEvents,
+                        onCheckedChange = { vm.updateSound("calendarEvents", it) })
                 }
             }
         }
@@ -344,8 +345,8 @@ fun SoundScreen(
                         color = MaterialTheme.colorScheme.onBackground,
                         text = "Dial pad tones")
                     ToggleSwitchInCommonUi(
-                        checked = vm.uiState.dialPadTones,
-                        onCheckedChange = { vm.update("dialPadTones", it) })
+                        checked = vm.soundUiState.dialPadTones,
+                        onCheckedChange = { vm.updateSound("dialPadTones", it) })
                 }
             }
             CardDividerInCommonUi(modifier)
@@ -359,8 +360,8 @@ fun SoundScreen(
                         color = MaterialTheme.colorScheme.onBackground,
                         text = "Screen locking sounds")
                     ToggleSwitchInCommonUi(
-                        checked = vm.uiState.screenLockingSounds,
-                        onCheckedChange = { vm.update("screenLockingSounds", it) })
+                        checked = vm.soundUiState.screenLockingSounds,
+                        onCheckedChange = { vm.updateSound("screenLockingSounds", it) })
                 }
             }
             CardViewItemInCommonUi(modifier) {
@@ -373,8 +374,8 @@ fun SoundScreen(
                         color = MaterialTheme.colorScheme.onBackground,
                         text = "Charging sounds and vibration")
                     ToggleSwitchInCommonUi(
-                        checked = vm.uiState.chargingSoundsAndVibration,
-                        onCheckedChange = { vm.update("chargingSoundsAndVibration", it) })
+                        checked = vm.soundUiState.chargingSoundsAndVibration,
+                        onCheckedChange = { vm.updateSound("chargingSoundsAndVibration", it) })
                 }
             }
             CardViewItemInCommonUi(modifier) {
@@ -387,8 +388,8 @@ fun SoundScreen(
                         color = MaterialTheme.colorScheme.onBackground,
                         text = "Touch sounds")
                     ToggleSwitchInCommonUi(
-                        checked = vm.uiState.touchSounds,
-                        onCheckedChange = { vm.update("touchSounds", it) })
+                        checked = vm.soundUiState.touchSounds,
+                        onCheckedChange = { vm.updateSound("touchSounds", it) })
                 }
             }
             CardViewItemInCommonUi(modifier) {
@@ -403,8 +404,8 @@ fun SoundScreen(
                             color = MaterialTheme.colorScheme.onBackground,
                             text = "Touch vibration")
                         ToggleSwitchInCommonUi(
-                            checked = vm.uiState.touchVibration,
-                            onCheckedChange = { vm.update("touchVibration", it) })
+                            checked = vm.soundUiState.touchVibration,
+                            onCheckedChange = { vm.updateSound("touchVibration", it) })
                     }
                     Text(style = MaterialTheme.typography.displayMedium,
                         color = MaterialTheme.colorScheme.onTertiaryContainer,
@@ -419,6 +420,6 @@ fun SoundScreen(
 @Composable
 fun SoundPreview() {
     SoundScreen(
-        vm = SoundViewModel(FakeProfileRepository(), SavedStateHandle())
+        vm = SettingViewModel(FakeProfileRepository(), SavedStateHandle())
     )
 }

@@ -1,5 +1,6 @@
 package com.example.directclone2.ui
 
+import android.util.Log
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.padding
@@ -8,12 +9,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
-import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.navArgument
 import com.example.directclone2.ui.screen.connecteddevices.ConnectedDevicesScreen
 import com.example.directclone2.ui.screen.display.DisplayScreen
 import com.example.directclone2.ui.components.BasicAppBar
@@ -38,10 +37,7 @@ fun DirectCloneApp(
             Column {
                 BasicAppBar(
                     routeOfCurrentScreen = currentScreen,
-                    navigateBack = {
-                        //navController.previousBackStackEntry?.savedStateHandle?.set(DirectCloneArgs.PROFILE_ID_ARG, currentProfileId)
-                        navController.popBackStack()
-                    }
+                    navigateBack = { navController.popBackStack() }
                 )
             }
         }
@@ -56,78 +52,82 @@ fun DirectCloneApp(
                     modifier = Modifier.fillMaxHeight(),
                     onAppClicked = { navController.navigate(Screen.Settings.route) })
             }
-            composable(route = Screen.Settings.routeWithArgs) { entry ->
-                val profileId = entry.arguments?.getString(DirectCloneArgs.PROFILE_ID_ARG)
+            composable(route = Screen.Settings.route) {
                 SettingsScreen(
                     modifier = Modifier.fillMaxHeight(),
                     navigate = { screen ->
+                        val profileId = navController.currentBackStackEntry?.savedStateHandle?.get<String>(DirectCloneArgs.PROFILE_ID_ARG)
+                        navController.currentBackStackEntry?.savedStateHandle?.remove<String>(DirectCloneArgs.PROFILE_ID_ARG)
+                        navController.previousBackStackEntry?.savedStateHandle?.set(DirectCloneArgs.PROFILE_ID_ARG, profileId)
+                        Log.d("DirectCloneApp", "SettingsScreen profileId: $profileId")
                         navController.navigate("${screen.route}?${DirectCloneArgs.PROFILE_ID_ARG}=${profileId ?: ""}")
                     })
             }
-            composable(
-                route = Screen.ConnectedDevices.routeWithArgs,
-                arguments = listOf(navArgument(DirectCloneArgs.PROFILE_ID_ARG) {
-                    type = NavType.StringType; nullable = true
-                })
-            ) { entry ->
-                entry.arguments?.getString(DirectCloneArgs.PROFILE_ID_ARG)
-                ConnectedDevicesScreen(modifier = Modifier.fillMaxHeight())
+            composable(route = Screen.ConnectedDevices.routeWithArgs) {
+                ConnectedDevicesScreen(
+                    modifier = Modifier.fillMaxHeight(),
+                    passProfileId = { id ->
+                        Log.d("DirectCloneApp", "passProfileId : $id")
+                        navController.previousBackStackEntry?.savedStateHandle?.set(DirectCloneArgs.PROFILE_ID_ARG, id)
+                    }
+                )
             }
-            composable(
-                route = Screen.Display.routeWithArgs,
-                arguments = listOf(navArgument(DirectCloneArgs.PROFILE_ID_ARG) {
-                    type = NavType.StringType; nullable = true
-                })) { entry ->
-                entry.arguments?.getString(DirectCloneArgs.PROFILE_ID_ARG)
-                DisplayScreen(modifier = Modifier.fillMaxHeight())
+            composable(route = Screen.Display.routeWithArgs) {
+                DisplayScreen(
+                    modifier = Modifier.fillMaxHeight(),
+                    passProfileId = { id ->
+                        Log.d("DirectCloneApp", "passProfileId : $id")
+                        navController.previousBackStackEntry?.savedStateHandle?.set(DirectCloneArgs.PROFILE_ID_ARG, id)
+                    }
+                )
             }
-            composable(
-                route = Screen.System.routeWithArgs,
-                arguments = listOf(navArgument(DirectCloneArgs.PROFILE_ID_ARG) {
-                    type = NavType.StringType; nullable = true
-                })) { entry ->
-                entry.arguments?.getString(DirectCloneArgs.PROFILE_ID_ARG)
-                SystemScreen(modifier = Modifier.fillMaxHeight())
+            composable(route = Screen.System.routeWithArgs) {
+                SystemScreen(
+                    modifier = Modifier.fillMaxHeight(),
+                    passProfileId = { id ->
+                        Log.d("DirectCloneApp", "passProfileId : $id")
+                        navController.previousBackStackEntry?.savedStateHandle?.set(DirectCloneArgs.PROFILE_ID_ARG, id)
+                    }
+                )
             }
-            composable(
-                route = Screen.LocationAndSecurity.routeWithArgs,
-                arguments = listOf(navArgument(DirectCloneArgs.PROFILE_ID_ARG) {
-                    type = NavType.StringType; nullable = true
-                })) { entry ->
-                entry.arguments?.getString(DirectCloneArgs.PROFILE_ID_ARG)
-                LocationAndSecurityScreen(modifier = Modifier.fillMaxHeight())
+            composable(route = Screen.LocationAndSecurity.routeWithArgs) {
+                LocationAndSecurityScreen(
+                    modifier = Modifier.fillMaxHeight(),
+                    passProfileId = { id ->
+                        Log.d("DirectCloneApp", "passProfileId : $id")
+                        navController.previousBackStackEntry?.savedStateHandle?.set(DirectCloneArgs.PROFILE_ID_ARG, id)
+                    }
+                )
             }
-            composable(
-                route = Screen.Battery.routeWithArgs,
-                arguments = listOf(navArgument(DirectCloneArgs.PROFILE_ID_ARG) {
-                    type = NavType.StringType; nullable = true
-                })) { entry ->
-                entry.arguments?.getString(DirectCloneArgs.PROFILE_ID_ARG)
-                BatteryScreen(modifier = Modifier.fillMaxHeight())
+            composable(route = Screen.Battery.routeWithArgs) {
+                BatteryScreen(
+                    modifier = Modifier.fillMaxHeight(),
+                    passProfileId = { id ->
+                        Log.d("DirectCloneApp", "passProfileId : $id")
+                        navController.previousBackStackEntry?.savedStateHandle?.set(DirectCloneArgs.PROFILE_ID_ARG, id)
+                    }
+                )
             }
-            composable(
-                route = Screen.Apps.routeWithArgs,
-                arguments = listOf(navArgument(DirectCloneArgs.PROFILE_ID_ARG) {
-                    type = NavType.StringType; nullable = true
-                })) { entry ->
-                entry.arguments?.getString(DirectCloneArgs.PROFILE_ID_ARG)
+            composable(route = Screen.Apps.routeWithArgs) {
                 AppsScreen(modifier = Modifier.fillMaxHeight())
             }
-            composable(
-                route = Screen.Sound.routeWithArgs,
-                arguments = listOf(navArgument(DirectCloneArgs.PROFILE_ID_ARG) {
-                    type = NavType.StringType; nullable = true
-                })) { entry ->
-                entry.arguments?.getString(DirectCloneArgs.PROFILE_ID_ARG)
-                SoundScreen(modifier = Modifier.fillMaxHeight())
+            composable(route = Screen.Sound.routeWithArgs) {
+                SoundScreen(
+                    modifier = Modifier.fillMaxHeight(),
+                    passProfileId = { id ->
+                        Log.d("DirectCloneApp", "passProfileId : $id")
+                        navController.previousBackStackEntry?.savedStateHandle?.set(DirectCloneArgs.PROFILE_ID_ARG, id)
+                    }
+                )
             }
-            composable(
-                route = Screen.NetworkAndInternet.routeWithArgs,
-                arguments = listOf(navArgument(DirectCloneArgs.PROFILE_ID_ARG) {
-                    type = NavType.StringType; nullable = true
-                })) { entry ->
-                entry.arguments?.getString(DirectCloneArgs.PROFILE_ID_ARG)
-                NetworkAndInternetScreen(modifier = Modifier.fillMaxHeight())
+            composable(route = Screen.NetworkAndInternet.routeWithArgs) {
+                NetworkAndInternetScreen(
+                    modifier = Modifier.fillMaxHeight(),
+                    passProfileId = { id ->
+                        Log.d("DirectCloneApp", "passProfileId : $id")
+                        navController.previousBackStackEntry?.savedStateHandle?.set(DirectCloneArgs.PROFILE_ID_ARG, id)
+                    }
+                )
             }
         }
     }

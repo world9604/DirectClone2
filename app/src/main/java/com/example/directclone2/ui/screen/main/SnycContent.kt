@@ -9,11 +9,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -27,22 +25,18 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.directclone2.R
 import com.example.directclone2.model.FakeProfileRepository
-import com.example.directclone2.model.ProfileDiskDataSource
-import com.example.directclone2.model.ProfileRepository
-import com.example.directclone2.ui.NavigationDestination
+import com.example.directclone2.ui.SettingViewModel
 import com.example.directclone2.ui.components.ButtonInCommonUi
 import com.example.directclone2.ui.components.CardDividerInCommonUi
 import com.example.directclone2.ui.components.SecondaryToggleCardInCommonUi
-import com.example.directclone2.ui.components.ToggleSwitchInCommonUi
-import java.io.File
 import java.util.Locale
 
 @Composable
 fun SyncContent(
     modifier: Modifier = Modifier,
-    vm: MainViewModel = viewModel(factory = MainViewModel.Factory),
+    vm: SettingViewModel = viewModel(factory = SettingViewModel.Factory),
 ) {
-    var hasBackupFile = vm.uiState.isCompletedCreateBackupFile
+    var hasBackupFile = vm.mainUiState.isCompletedCreateBackupFile
     hasBackupFile = true
     Column(
         modifier = modifier
@@ -65,7 +59,7 @@ fun SyncContent(
                 modifier = modifier,
                 text = "Internal Storage"
             ) { modifier ->
-                vm.uiState.backupFiles.forEach { file ->
+                vm.mainUiState.backupFiles.forEach { file ->
                     Column(
                         modifier = modifier.padding(start = 16.dp, end = 16.dp,
                             top = 16.dp, bottom = 11.dp),
@@ -129,5 +123,5 @@ fun SyncContent(
 @Preview(group="Test", heightDp = 800, showBackground = true)
 @Composable
 fun SyncPreview() {
-    SyncContent(vm = MainViewModel(FakeProfileRepository(), SavedStateHandle()))
+    SyncContent(vm = SettingViewModel(FakeProfileRepository(), SavedStateHandle()))
 }

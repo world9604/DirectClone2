@@ -19,6 +19,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -26,28 +28,26 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.SavedStateHandle
-import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.directclone2.R
 import com.example.directclone2.model.FakeProfileRepository
-import com.example.directclone2.model.ProfileDiskDataSource
-import com.example.directclone2.model.ProfileRepository
-import com.example.directclone2.model.data.ProfileDao
-import com.example.directclone2.ui.NavigationDestination
+import com.example.directclone2.ui.SettingViewModel
 import com.example.directclone2.ui.components.ButtonInCommonUi
 import com.example.directclone2.ui.components.CardDividerInCommonUi
 import com.example.directclone2.ui.components.CardViewInCommonUi
 import com.example.directclone2.ui.components.RadioButtonsInCardViewInCommonUi
-import com.example.directclone2.ui.screen.main.MainViewModel
-import java.io.File
 import java.util.Locale
 
 @Composable
 fun BatteryScreen(
     modifier: Modifier = Modifier,
-    vm: BatteryViewModel = viewModel(factory = BatteryViewModel.Factory)
+    passProfileId: (profileId: String) -> Unit = {},
+    vm: SettingViewModel = viewModel(factory = SettingViewModel.Factory)
 ) {
-    if (vm.uiState.isOkSmartChargingInfo) {
+    val profileId by vm.profileId.collectAsState()
+    passProfileId(profileId)
+
+    if (vm.batteryUiState.isOkSmartChargingInfo) {
         Dialog(onDismissRequest = {}) {
             Box(
                 Modifier
@@ -173,8 +173,8 @@ fun BatteryScreen(
                 modifier = modifier
                     .padding(start = 16.dp, end = 16.dp, bottom = 11.dp)
                     .fillMaxWidth(),
-                value = vm.uiState.batteryLowWarningLevel,
-                onValueChange = {vm.update("batteryLowWarningLevel", it)})
+                value = vm.batteryUiState.batteryLowWarningLevel,
+                onValueChange = {vm.updateBattery("batteryLowWarningLevel", it)})
             CardDividerInCommonUi(modifier = modifier)
             Row(
                 modifier = modifier
@@ -196,8 +196,8 @@ fun BatteryScreen(
                 modifier = modifier
                     .padding(start = 16.dp, end = 16.dp, bottom = 11.dp)
                     .fillMaxWidth(),
-                value = vm.uiState.batteryCriticalWarningLevel,
-                onValueChange = {vm.update("batteryCriticalWarningLevel", it)})
+                value = vm.batteryUiState.batteryCriticalWarningLevel,
+                onValueChange = {vm.updateBattery("batteryCriticalWarningLevel", it)})
         }
         Text(
             modifier = modifier.padding(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 8.dp),
@@ -226,8 +226,8 @@ fun BatteryScreen(
             }
             RadioButtonsInCardViewInCommonUi(
                 modifier = modifier,
-                currentResId = vm.uiState.smartCharging.resIdOfTitle,
-                onRadioClicked = {vm.update("smartCharging", it)},
+                currentResId = vm.batteryUiState.smartCharging.resIdOfTitle,
+                onRadioClicked = {vm.updateBattery("smartCharging", it)},
                 titleAndSubTitleRes = listOf(
                     Pair(BatteryUiState.SmartCharging.LifeXMode.resIdOfTitle, BatteryUiState.SmartCharging.LifeXMode.resIdOfSubTitle),
                     Pair(BatteryUiState.SmartCharging.NormalMode.resIdOfTitle, BatteryUiState.SmartCharging.NormalMode.resIdOfSubTitle),
@@ -240,5 +240,5 @@ fun BatteryScreen(
 @Preview(group="Test", showBackground = true)
 @Composable
 fun BatteryPreview() {
-    BatteryScreen(vm = BatteryViewModel(FakeProfileRepository(), SavedStateHandle()))
+    BatteryScreen(vm = SettingViewModel(FakeProfileRepository(), SavedStateHandle()))
 }
