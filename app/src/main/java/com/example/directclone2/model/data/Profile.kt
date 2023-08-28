@@ -12,10 +12,15 @@ data class Profile (
     @PrimaryKey
     val id: String,
 
+    /* File Info */
     val fileName: String = "",
     val filePath: String = "",
     val createdDate: Date = Date(),
+    val isFileCreated: Boolean = false,
     val password: String = "",
+
+    /* BackupApp Info */
+    val backupApps: List<LocalBackupApp> = listOf(),
 
     /* ConnectedDevices Screen */
     @SerializedName("Scan2StageEntity/wiress_config/bluetooth")

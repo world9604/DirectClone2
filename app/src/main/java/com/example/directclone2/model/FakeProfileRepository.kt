@@ -1,10 +1,14 @@
 package com.example.directclone2.model
 
 import com.example.directclone2.model.data.Profile
+import com.example.directclone2.ui.screen.main.AppItem
+import kotlinx.coroutines.flow.Flow
+
+
 
 class FakeProfileRepository: IProfileRepository {
 
-    override suspend fun create(): String {
+    override suspend fun createProfile(): String {
         TODO("Not yet implemented")
     }
 
@@ -12,11 +16,15 @@ class FakeProfileRepository: IProfileRepository {
         TODO("Not yet implemented")
     }
 
-    override suspend fun getBackupFileDirectory(profileId: String): String {
+    override fun getWorkingProfileStream(): Flow<Profile?> {
         TODO("Not yet implemented")
     }
 
-    override suspend fun updateFileInfo(profileId: String, password: String) {
+    override fun getWorkingProfileIdStream(): Flow<String?> {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun getBackupFileDirectory(): String {
         TODO("Not yet implemented")
     }
 
@@ -112,6 +120,18 @@ class FakeProfileRepository: IProfileRepository {
         use24hourFormat: Boolean,
         ntpServer: String
     ) {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun createBackupFile(id: String, password: String): Boolean {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun updateBackupApps(id: String, appName: String) {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun getBackupApps(): List<AppItem> {
         TODO("Not yet implemented")
     }
 }

@@ -60,7 +60,7 @@ import java.util.Locale
 fun BackupContent(
     modifier: Modifier = Modifier,
     vm: SettingViewModel = viewModel(factory = SettingViewModel.Factory),
-    onAppClicked: () -> Unit = {}
+    onAppClicked: (app: AppItem) -> Unit = {}
 ) {
     Column(
         modifier = modifier
@@ -71,7 +71,7 @@ fun BackupContent(
         Column {
             var isClickPreInstallAppBtn by rememberSaveable { mutableStateOf(false) }
             var isClickedInstalledAppBtn by rememberSaveable { mutableStateOf(false) }
-            vm.appsForBackup.filter { it.isPreInstalledApp }?.let {
+            vm.mainUiState.appsForBackup.filter { it.isPreInstalledApp }?.let {
                 AppsForBackupList(
                     title = "Enterprise Apps and System settings",
                     subTitle = "(Backup File Selection)",
@@ -81,7 +81,7 @@ fun BackupContent(
                     vm = vm,
                     onAppClicked = onAppClicked)
             }
-            vm.appsForBackup.filter { !it.isPreInstalledApp }?.let {
+            vm.mainUiState.appsForBackup.filter { !it.isPreInstalledApp }?.let {
                 AppsForBackupList(
                     title = "installed Apps",
                     subTitle = "(Automatic installation when adding APK file to Direct Clone > Apps)",
@@ -240,9 +240,7 @@ private fun SetPasswordDialog(vm: SettingViewModel) {
                             text = "CANCEL".uppercase(Locale.getDefault()))
                     }
                     ButtonInCommonUi(
-                        modifier = Modifier
-                            .height(48.dp)
-                            .width(144.dp),
+                        modifier = Modifier.height(48.dp).width(144.dp),
                         enabled = vm.matchPasswordAndConfirmPassword(),
                         containerColor = MaterialTheme.colorScheme.primary,
                         onClick = {
@@ -426,7 +424,7 @@ private fun AppsForBackupList(
     apps: List<AppItem>,
     clicked: Boolean = true,
     vm: SettingViewModel,
-    onAppClicked: () -> Unit = {},
+    onAppClicked: (app: AppItem) -> Unit = {},
 )  {
     AppsForBackupToggleCard(title, subTitle, clicked, onClick)
 
@@ -447,13 +445,13 @@ private fun AppsForBackupList(
 fun AppsForBackupItem(
     app: AppItem,
     vm: SettingViewModel,
-    onAppClicked: () -> Unit = {},
+    onAppClicked: (app: AppItem) -> Unit = {},
 ) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .padding(top = 16.dp, start = 16.dp, end = 16.dp, bottom = 11.dp)
-            .clickable { onAppClicked() },
+            .clickable { onAppClicked(app) },
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {

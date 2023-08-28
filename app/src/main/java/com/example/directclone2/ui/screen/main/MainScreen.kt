@@ -17,7 +17,7 @@ import com.example.directclone2.ui.SettingViewModel
 fun MainScreen(
     modifier: Modifier = Modifier,
     vm: SettingViewModel = viewModel(factory = SettingViewModel.Factory),
-    onAppClicked: () -> Unit = {}
+    onAppClicked: (app: AppItem) -> Unit = {}
 ) {
     Scaffold(
         topBar = {
@@ -32,14 +32,12 @@ fun MainScreen(
                 BackupContent(
                     modifier = modifier.padding(innerPadding),
                     vm = vm,
-                    onAppClicked = onAppClicked
-                )
+                    onAppClicked = onAppClicked)
             }
             MainUiState.TabContent.Sync -> {
                 SyncContent(
                     modifier = modifier.padding(innerPadding),
-                    vm = vm,
-                )
+                    vm = vm)
             }
         }
     }

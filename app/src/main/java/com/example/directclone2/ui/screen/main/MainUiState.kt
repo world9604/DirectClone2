@@ -1,10 +1,15 @@
 package com.example.directclone2.ui.screen.main
 
+import android.content.ComponentName
+import android.content.Context
+import android.content.Intent
 import androidx.annotation.StringRes
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.navigation.NavController
 import com.example.directclone2.R
+import com.example.directclone2.ui.Screen
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -13,6 +18,7 @@ import kotlin.reflect.full.memberFunctions
 
 data class MainUiState(
     val backupFiles: List<BackupFile> = listOf(BackupFile(), BackupFile()),
+    val appsForBackup: List<AppItem> = listOf(),
     val isInternalStorage: Boolean = true,
     val parentSaveDirectoryForBackupFile: String = "",
     val usePassword: Boolean = false,
@@ -45,11 +51,39 @@ data class BackupFile(
     val formattedCreatedDate: String by lazy { SimpleDateFormat("yyyy/MM/dd HH:mm").format(createdDate) }
 }
 
-data class AppItem (
+fun AppItem.startActivity(context: Context, navController: NavController) {
+    when (appName) {
+        "Settings" -> { navController.navigate(Screen.Settings.route) }
+        else -> {
+            val packageName = this.packageName.ifBlank {
+                throw PackageNotExistException(this.packageName)
+            }
+            val activityName = this.activityName.ifBlank {
+                throw ActivityNotExistException(this.activityName)
+            }
+            context.startActivity(
+                Intent().apply {
+                    action = Intent.ACTION_MAIN
+                    component = ComponentName(packageName, activityName)
+                }
+            )
+        }
+    }
+}
+
+class PackageNotExistException(
+    packageName: String,
+): Exception("This package($packageName) does not exist.")
+
+class ActivityNotExistException(
+    activityName: String,
+): Exception("This activity($activityName) does not exist.")
+
+class AppItem(
+    val appName: String,
+    val activityName: String = "",
     val packageName: String = "",
-    val appName: String = "",
     val isPreInstalledApp: Boolean = false,
-    val initialSelected: Boolean = false
-) {
+    val initialSelected: Boolean = false) {
     var selected: Boolean by mutableStateOf(initialSelected)
 }

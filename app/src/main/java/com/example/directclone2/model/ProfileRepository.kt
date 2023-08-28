@@ -1,13 +1,21 @@
 package com.example.directclone2.model
 
+import android.util.Log
+import com.example.directclone2.model.data.LocalBackupApp
 import com.example.directclone2.model.data.Profile
 import com.example.directclone2.model.data.ProfileDao
-import com.example.directclone2.model.usecase.MakeBackupFileNameUseCase
+import com.example.directclone2.model.data.toExternal
+import com.example.directclone2.model.data.toLocal
+import com.example.directclone2.model.usecase.CreateFileUseCase
+import com.example.directclone2.model.usecase.MakeFileNameUseCase
+import com.example.directclone2.ui.screen.main.AppItem
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
+import java.io.File
 import java.util.Calendar
 import java.util.UUID
 
@@ -20,6 +28,9 @@ class ProfileRepository (
 ): IProfileRepository {
 
     companion object {
+        const val TAG = "ProfileRepository"
+        const val INTERNAL_STORAGE = "/storage/emulated/0/"
+
         @Volatile
         private var instance: ProfileRepository? = null
         fun getInstance(localDataSource: ProfileDao) =
@@ -34,7 +45,7 @@ class ProfileRepository (
 
     private fun Boolean.toOnOrOff(): String = if (this) "ON" else "OFF"
 
-    override suspend fun create(): String {
+    override suspend fun createProfile(): String {
         val profileId = withContext(dispatcher) {
             UUID.randomUUID().toString()
         }
@@ -42,10 +53,18 @@ class ProfileRepository (
         return profileId
     }
 
-    override suspend fun getBackupFileDirectory(profileId: String)
-            = getProfile(profileId)?.filePath ?: throw Exception("Profile (id : $profileId) not found")
+    override suspend fun getBackupFileDirectory() = INTERNAL_STORAGE
+
     override suspend fun getProfile(id: String): Profile? {
         return localDataSource.getProfile(id)
+    }
+
+    override fun getWorkingProfileStream(): Flow<Profile?> {
+        return localDataSource.observeNotCreatedFile()
+    }
+
+    override fun getWorkingProfileIdStream(): Flow<String?> {
+        return localDataSource.observeWorkingProfileId()
     }
 
     override suspend fun updateBattery(profileId: String, smartCharging: String, batteryLowWarningLevel: String,
@@ -170,18 +189,35 @@ class ProfileRepository (
         localDataSource.update(profile)
     }
 
-    override suspend fun updateFileInfo(profileId: String, password: String) {
+    override suspend fun createBackupFile(id: String, password: String): Boolean
+    = withContext(dispatcher) {
         val now = Calendar.getInstance().time
-        val fileName = withContext(dispatcher) {
-            MakeBackupFileNameUseCase("modelName", "partNum", now)
-        }
-        val profile = Profile(
-            id = profileId,
+        val fileName = MakeFileNameUseCase("modelName", "partNum", now)
+        val profile = getProfile(id)?.copy(
             fileName = fileName,
-            filePath = "/storage/emulated/0/",
+            filePath = INTERNAL_STORAGE,
             createdDate = now,
             password = password
-        )
+        ) ?: throw Exception("Profile (id : $id) not found")
         localDataSource.update(profile)
+        if (CreateFileUseCase(profile)) {
+            localDataSource.updateIsCreated(id)
+            return@withContext true
+        } else {
+            return@withContext false
+        }
     }
+
+    override suspend fun updateBackupApps(id: String, appName: String) {
+        val profile = getProfile(id) ?: throw Exception("Profile (id : $id) not found")
+        val backupApps = profile.backupApps
+        val mutableBackupApps = backupApps.toMutableList()
+        val backupApp = AppItem(appName = appName).toLocal()
+        mutableBackupApps.add(backupApp)
+        val updatedProfile = profile.copy(backupApps = mutableBackupApps)
+        localDataSource.update(updatedProfile)
+    }
+
+    override suspend fun getBackupApps() = LocalBackupApp.AppForBackup.values()
+        .map{ it.toLocal().toExternal() }
 }

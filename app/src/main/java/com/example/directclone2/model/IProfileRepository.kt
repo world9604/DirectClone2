@@ -1,16 +1,18 @@
 package com.example.directclone2.model
 
 import com.example.directclone2.model.data.Profile
+import com.example.directclone2.ui.screen.main.AppItem
+import kotlinx.coroutines.flow.Flow
 
 interface IProfileRepository {
 
-    suspend fun create(): String
+    suspend fun createProfile(): String
 
     suspend fun getProfile(id: String): Profile?
+    fun getWorkingProfileStream(): Flow<Profile?>
+    fun getWorkingProfileIdStream(): Flow<String?>
 
-    suspend fun getBackupFileDirectory(profileId: String): String
-
-    suspend fun updateFileInfo(profileId: String, password: String)
+    suspend fun getBackupFileDirectory(): String
 
     suspend fun updateBattery(profileId: String, smartCharging: String, batteryLowWarningLevel: String,
                               batteryCriticalWarningLevel: String)
@@ -66,4 +68,10 @@ interface IProfileRepository {
         use24hourFormat: Boolean,
         ntpServer: String
     )
+
+    suspend fun createBackupFile(id: String, password: String): Boolean
+
+    suspend fun updateBackupApps(id: String, appName: String)
+
+    suspend fun getBackupApps(): List<AppItem>
 }

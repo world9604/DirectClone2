@@ -16,19 +16,23 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.directclone2.ui.Screen
+import com.example.directclone2.ui.SettingViewModel
 import com.example.directclone2.ui.screens
 
 
 @Composable
 fun SettingsScreen (
     modifier: Modifier = Modifier,
-    navigate: (Screen) -> Unit = {}
+    navigate: (Screen) -> Unit = {},
 ) {
     Column(
         modifier = modifier.background(MaterialTheme.colorScheme.background)
@@ -39,23 +43,7 @@ fun SettingsScreen (
             SettingsContent (
                 modifier = newModifier.background(MaterialTheme.colorScheme.surface),
                 name = screen.resourceId,
-                onSettingClicked = { navigate(screen)
-                    /*
-                    when (screen) {
-                        Screen.BackupContent -> navController.navigate(Screen.BackupContent.routeWithArgs)
-                        Screen.SyncContent -> navController.navigate(Screen.SyncContent.routeWithArgs)
-                        Screen.Settings -> navController.navigate(Screen.Settings.routeWithArgs)
-                        Screen.Sound -> navController.navigate(Screen.Sound.routeWithArgs)
-                        Screen.Battery -> navController.navigate(Screen.Battery.routeWithArgs)
-                        Screen.LocationAndSecurity -> navController.navigate(Screen.LocationAndSecurity.routeWithArgs)
-                        Screen.ConnectedDevices -> navController.navigate(Screen.ConnectedDevices.routeWithArgs)
-                        Screen.Apps -> navController.navigate(Screen.Apps.routeWithArgs)
-                        Screen.Display -> navController.navigate(Screen.Display.routeWithArgs)
-                        Screen.System -> navController.navigate(Screen.System.routeWithArgs)
-                        Screen.NetworkAndInternet -> navController.navigate(Screen.NetworkAndInternet.routeWithArgs)
-                    }
-                     */
-                },
+                onSettingClicked = { navigate(screen) },
             )
         }
     }

@@ -4,7 +4,6 @@ import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.toMutableStateList
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -15,6 +14,7 @@ import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.example.directclone2.DirectCloneApplication
 import com.example.directclone2.model.IProfileRepository
+import com.example.directclone2.model.ProfileRepository
 import com.example.directclone2.ui.screen.battery.BatteryUiState
 import com.example.directclone2.ui.screen.battery.update
 import com.example.directclone2.ui.screen.connecteddevices.ConnectedDevicesUiState
@@ -33,6 +33,8 @@ import com.example.directclone2.ui.screen.sound.update
 import com.example.directclone2.ui.screen.system.SystemUiState
 import com.example.directclone2.ui.screen.system.update
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -54,7 +56,23 @@ class SettingViewModel (
         }
     }
 
-    val profileId = savedStateHandle.getStateFlow(DirectCloneArgs.PROFILE_ID_ARG, "")
+    private val _workingProfileId: MutableStateFlow<String?> = MutableStateFlow(null)
+    val workingProfileId: StateFlow<String?> = _workingProfileId
+
+    var mainUiState by mutableStateOf(MainUiState())
+        private set
+
+    init {
+        viewModelScope.launch {
+            mainUiState = mainUiState.copy(
+                parentSaveDirectoryForBackupFile = repo.getBackupFileDirectory(),
+                appsForBackup = repo.getBackupApps())
+            repo.getWorkingProfileIdStream().collect {
+                Log.d(ProfileRepository.TAG, "workingProfileId in viewModel : $it")
+                _workingProfileId.value = it
+            }
+        }
+    }
 
     var batteryUiState by mutableStateOf(BatteryUiState())
         private set
@@ -62,11 +80,9 @@ class SettingViewModel (
     fun <T: Any> updateBattery(field: String, value: T) {
         batteryUiState = batteryUiState.update(field, value)
         viewModelScope.launch {
-            profileId.value.ifBlank {
-                savedStateHandle[DirectCloneArgs.PROFILE_ID_ARG] = repo.create()
-            }
+            val profileId = workingProfileId.value ?: repo.createProfile()
             repo.updateBattery(
-                profileId.value,
+                profileId,
                 batteryUiState.smartCharging.name,
                 getBatteryLowWarningLevelForText().toString(),
                 getBatteryCriticalWarningLevelForText().toString())
@@ -91,11 +107,9 @@ class SettingViewModel (
     fun <T: Any> updateConnectedDevices(field: String, value: T) {
         connectedDevicesUiState = connectedDevicesUiState.update(field, value)
         viewModelScope.launch {
-            profileId.value.ifBlank {
-                savedStateHandle[DirectCloneArgs.PROFILE_ID_ARG] = repo.create()
-            }
+            val profileId = workingProfileId.value ?: repo.createProfile()
             repo.updateConnectedDevices(
-                profileId.value!!,
+                profileId,
                 connectedDevicesUiState.nfc,
                 connectedDevicesUiState.bluetooth
             )
@@ -108,11 +122,9 @@ class SettingViewModel (
     fun <T: Any> updateDisplay(field: String, value: T) {
         displayUiState = displayUiState.update(field, value)
         viewModelScope.launch {
-            profileId.value.ifBlank {
-                savedStateHandle[DirectCloneArgs.PROFILE_ID_ARG] = repo.create()
-            }
+            val profileId = workingProfileId.value ?: repo.createProfile()
             repo.updateDisplay(
-                profileId.value,
+                profileId,
                 getScreenBrightnessForText().toString(),
                 displayUiState.autoScreenRotate,
                 displayUiState.adaptiveBrightness,
@@ -133,11 +145,9 @@ class SettingViewModel (
     fun <T: Any> updateScreenLock(field: String, value: T) {
         locationAndSecurityUiState = locationAndSecurityUiState.update(field, value)
         viewModelScope.launch {
-            profileId.value.ifBlank {
-                savedStateHandle[DirectCloneArgs.PROFILE_ID_ARG] = repo.create()
-            }
+            val profileId = workingProfileId.value ?: repo.createProfile()
             repo.updateScreenLock(
-                profileId.value,
+                profileId,
                 locationAndSecurityUiState.useLocation,
                 locationAndSecurityUiState.currentScreenLockPinOrPassword,
                 locationAndSecurityUiState.screenLock.name,
@@ -171,20 +181,19 @@ class SettingViewModel (
         }
     }
 
-    var mainUiState by mutableStateOf(MainUiState())
-        private set
-
     fun <T: Any> updateMain(field: String, value: T) {
         mainUiState = mainUiState.update(field, value)
     }
 
     fun save() = viewModelScope.launch {
-        profileId.value.ifBlank { return@launch }
-        repo.updateFileInfo(profileId.value, mainUiState.password)
+        val profileId = workingProfileId.value ?: repo.createProfile()
+        val isCompletedCreateBackupFile = repo.createBackupFile(profileId, mainUiState.password)
         delay(3000)
-        //todo : 백업 파일 저장(json 파일) 로직
-        //repo.createBackupFile()
-        mainUiState = mainUiState.copy(isCompletedCreateBackupFile = true)
+        if (isCompletedCreateBackupFile) {
+            mainUiState = mainUiState.copy(isCompletedCreateBackupFile = true)
+        } else {
+            //todo : 화면에 backup 실패 메시지 전송
+        }
     }
 
     val tabs = MainUiState.TabContent.values()
@@ -196,39 +205,26 @@ class SettingViewModel (
         currentTab = tab
     }
 
-    private val _appsForBackup = getAppItems().toMutableStateList()
-    val appsForBackup: List<AppItem>
-        get() = _appsForBackup
+    fun haveAtLeastOneAppToBackUp() = mainUiState.appsForBackup.isNotEmpty()
 
-    private fun getAppItems() = listOf (
-        AppItem(appName = "Program Buttons", isPreInstalledApp = true),
-        AppItem(appName = "Scan Settings", isPreInstalledApp = true),
-        AppItem(appName = "Settings", isPreInstalledApp = true),
-        AppItem(appName = "EmKiosk", isPreInstalledApp = false),
-        AppItem(appName = "EmKiosk Config", isPreInstalledApp = false),
-        AppItem(appName = "EmKiosk Config2", isPreInstalledApp = false),
-        AppItem(appName = "EmKiosk Config3", isPreInstalledApp = false),
-        AppItem(appName = "EmKiosk Config4", isPreInstalledApp = false),
-        AppItem(appName = "EmKiosk Config5", isPreInstalledApp = false)
-    )
-
-    fun haveAtLeastOneAppToBackUp() = appsForBackup.any { it.selected }
+    fun getNumOfSelectedApps() = mainUiState.appsForBackup.count{ it.selected }
 
     fun matchPasswordAndConfirmPassword() = mainUiState.run {
         password.isNotEmpty() && (password == confirmPassword)
     }
 
-    fun remove(item: AppItem) = viewModelScope.launch {
-        _appsForBackup.remove(item)
-    }
-
     fun changeAppSelected(item: AppItem, selected: Boolean) = viewModelScope.launch {
-        appsForBackup.find { it.appName == item.appName }?.let {
+        val apps = mainUiState.appsForBackup.toMutableList()
+        apps.find { it.appName == item.appName }?.let {
             it.selected = selected
+            val profileId = workingProfileId.value ?: repo.createProfile()
+            Log.d(TAG, "profileId in changeAppSelected: $profileId")
+            repo.updateBackupApps(profileId, it.appName)
         }
+        mainUiState = mainUiState.copy(
+            appsForBackup = apps
+        )
     }
-
-    fun getNumOfSelectedApps() = appsForBackup.count{ it.selected }
 
     fun openBackupResultDialog() {
         if (mainUiState.usePassword) {
@@ -237,15 +233,6 @@ class SettingViewModel (
             mainUiState = mainUiState.copy(openBackupResultDialog = true)
             save()
         }
-    }
-
-    init {
-        initBackupFileSaveLocation()
-    }
-
-    private fun initBackupFileSaveLocation() = viewModelScope.launch {
-        profileId.value.ifBlank { return@launch }
-        mainUiState = mainUiState.copy(parentSaveDirectoryForBackupFile = repo.getBackupFileDirectory(profileId.value))
     }
 
     fun initIsCompletedCreateBackupFile() {
@@ -257,14 +244,11 @@ class SettingViewModel (
 
     fun <T: Any> updateNetworkAndInternet(field: String, value: T) {
         networkAndInternetUiState = networkAndInternetUiState.update(field, value)
-        Log.d(TAG, "sharedProfileId 1: ${profileId.value}")
+        Log.d(TAG, "sharedProfileId 1: ${workingProfileId.value}")
         viewModelScope.launch {
-            profileId.value.ifBlank {
-                savedStateHandle[DirectCloneArgs.PROFILE_ID_ARG] = repo.create()
-                Log.d(TAG, "sharedProfileId 2: ${profileId.value}")
-            }
+            val profileId = workingProfileId.value ?: repo.createProfile()
             repo.updateNetworkAndInternet(
-                profileId.value,
+                profileId,
                 networkAndInternetUiState.wifi,
                 //uiState.savedNetworks,
                 networkAndInternetUiState.dataServer,
@@ -281,11 +265,9 @@ class SettingViewModel (
     fun <T: Any> updateSound(field: String, value: T) {
         soundUiState = soundUiState.update(field, value)
         viewModelScope.launch {
-            profileId.value.ifBlank {
-                savedStateHandle[DirectCloneArgs.PROFILE_ID_ARG] = repo.create()
-            }
+            val profileId = workingProfileId.value ?: repo.createProfile()
             repo.updateSound(
-                profileId.value,
+                profileId,
                 soundUiState.vibrateOnTouch.name,
                 soundUiState.conversations.name,
                 soundUiState.messages.name,
@@ -319,11 +301,9 @@ class SettingViewModel (
     fun <T: Any> updateSystem(field: String, value: T) {
         systemUiState = systemUiState.update(field, value)
         viewModelScope.launch {
-            profileId.value.ifBlank {
-                savedStateHandle[DirectCloneArgs.PROFILE_ID_ARG] = repo.create()
-            }
+            val profileId = workingProfileId.value ?: repo.createProfile()
             repo.updateSystem(
-                profileId.value,
+                profileId,
                 systemUiState.languages,
                 systemUiState.spellChecker,
                 systemUiState.spellCheckLanguage,

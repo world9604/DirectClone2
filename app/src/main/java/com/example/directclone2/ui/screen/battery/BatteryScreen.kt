@@ -41,12 +41,8 @@ import java.util.Locale
 @Composable
 fun BatteryScreen(
     modifier: Modifier = Modifier,
-    passProfileId: (profileId: String) -> Unit = {},
     vm: SettingViewModel = viewModel(factory = SettingViewModel.Factory)
 ) {
-    val profileId by vm.profileId.collectAsState()
-    passProfileId(profileId)
-
     if (vm.batteryUiState.isOkSmartChargingInfo) {
         Dialog(onDismissRequest = {}) {
             Box(

@@ -1,13 +1,12 @@
 package com.example.directclone2.model.usecase
 
 import java.text.SimpleDateFormat
-import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 
-object MakeBackupFileNameUseCase {
+object MakeFileNameUseCase {
 
-    private val formatter = SimpleDateFormat("yyyy/MM/dd HHmmSS", Locale.getDefault())
+    private val formatter = SimpleDateFormat("yyyy_MM_dd_HHmmSS", Locale.getDefault())
 
     operator fun invoke(modelName: String, partNum: String, now: Date): String {
         val formattedNow = formatter.format(now)

@@ -6,7 +6,7 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 
-@Database(entities = [Profile::class], version = 1, exportSchema = false)
+@Database(entities = [Profile::class], version = 4, exportSchema = false)
 @TypeConverters(Converters::class)
 abstract class ProfileDatabase: RoomDatabase() {
     abstract fun profileDao(): ProfileDao
@@ -17,6 +17,7 @@ abstract class ProfileDatabase: RoomDatabase() {
         fun getDatabase(context: Context): ProfileDatabase {
             return Instance ?: synchronized(this) {
                 Room.databaseBuilder(context, ProfileDatabase::class.java, "profile_database")
+                    .fallbackToDestructiveMigration()
                     .build()
                     .also { Instance = it }
             }
