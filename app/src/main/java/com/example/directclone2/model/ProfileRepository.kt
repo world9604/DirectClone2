@@ -1,6 +1,6 @@
 package com.example.directclone2.model
 
-import android.util.Log
+import android.os.Environment
 import com.example.directclone2.model.data.LocalBackupApp
 import com.example.directclone2.model.data.Profile
 import com.example.directclone2.model.data.ProfileDao
@@ -15,7 +15,6 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
-import java.io.File
 import java.util.Calendar
 import java.util.UUID
 
@@ -27,9 +26,10 @@ class ProfileRepository (
     //private val scope: CoroutineScope,
 ): IProfileRepository {
 
+    private val PREFIX_STORAGE = "${Environment.getExternalStorageDirectory()}/DirectClone/"
+
     companion object {
         const val TAG = "ProfileRepository"
-        const val INTERNAL_STORAGE = "/storage/emulated/0/"
 
         @Volatile
         private var instance: ProfileRepository? = null
@@ -53,7 +53,21 @@ class ProfileRepository (
         return profileId
     }
 
-    override suspend fun getBackupFileDirectory() = INTERNAL_STORAGE
+    override suspend fun getBackupFileDirectory() = PREFIX_STORAGE
+
+    override suspend fun updateBackupFileInfo(id: String): String {
+        val now = Calendar.getInstance().time
+        val fileName = MakeFileNameUseCase("modelName", "partNum", now)
+        withContext(dispatcher) {
+            val profile = getProfile(id)?.copy(
+                fileName = fileName,
+                filePath = PREFIX_STORAGE,
+                createdDate = now
+            ) ?: throw Exception("Profile (id : $id) not found")
+            localDataSource.update(profile)
+        }
+        return fileName
+    }
 
     override suspend fun getProfile(id: String): Profile? {
         return localDataSource.getProfile(id)
@@ -191,14 +205,8 @@ class ProfileRepository (
 
     override suspend fun createBackupFile(id: String, password: String): Boolean
     = withContext(dispatcher) {
-        val now = Calendar.getInstance().time
-        val fileName = MakeFileNameUseCase("modelName", "partNum", now)
-        val profile = getProfile(id)?.copy(
-            fileName = fileName,
-            filePath = INTERNAL_STORAGE,
-            createdDate = now,
-            password = password
-        ) ?: throw Exception("Profile (id : $id) not found")
+        val profile = getProfile(id)?.copy(password = password)
+            ?: throw Exception("Profile (id : $id) not found")
         localDataSource.update(profile)
         if (CreateFileUseCase(profile)) {
             localDataSource.updateIsCreated(id)

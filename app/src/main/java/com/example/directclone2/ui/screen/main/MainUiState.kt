@@ -17,10 +17,11 @@ import kotlin.reflect.full.instanceParameter
 import kotlin.reflect.full.memberFunctions
 
 data class MainUiState(
+    val fileName: String = "",
     val backupFiles: List<BackupFile> = listOf(BackupFile(), BackupFile()),
     val appsForBackup: List<AppItem> = listOf(),
     val isInternalStorage: Boolean = true,
-    val parentSaveDirectoryForBackupFile: String = "",
+    val directoryForBackup: String = "",
     val usePassword: Boolean = false,
     val password: String = "",
     val confirmPassword: String = "",

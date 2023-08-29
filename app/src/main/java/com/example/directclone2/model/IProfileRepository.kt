@@ -14,6 +14,8 @@ interface IProfileRepository {
 
     suspend fun getBackupFileDirectory(): String
 
+    suspend fun updateBackupFileInfo(id: String): String
+
     suspend fun updateBattery(profileId: String, smartCharging: String, batteryLowWarningLevel: String,
                               batteryCriticalWarningLevel: String)
 

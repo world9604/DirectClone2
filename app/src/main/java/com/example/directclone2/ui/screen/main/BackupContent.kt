@@ -298,8 +298,7 @@ private fun BackupDialog(vm: SettingViewModel) {
                         Text(
                             style = MaterialTheme.typography.labelSmall,
                             color = MaterialTheme.colorScheme.onTertiaryContainer,
-                            //text = "• ${vm.uiState.backupFile.name}")
-                            text = "• ")
+                            text = "• ${vm.mainUiState.fileName}")
                     }
                 }
                 Column(
@@ -363,7 +362,7 @@ private fun BackupDialog(vm: SettingViewModel) {
                         Text(
                             style = MaterialTheme.typography.labelSmall,
                             color = MaterialTheme.colorScheme.onTertiaryContainer,
-                            text = "• ${vm.mainUiState.parentSaveDirectoryForBackupFile}")
+                            text = "• ${vm.mainUiState.directoryForBackup}")
                     }
                 }
                 Row(

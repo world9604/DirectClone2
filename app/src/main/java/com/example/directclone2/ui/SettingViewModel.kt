@@ -32,10 +32,12 @@ import com.example.directclone2.ui.screen.sound.SoundUiState
 import com.example.directclone2.ui.screen.sound.update
 import com.example.directclone2.ui.screen.system.SystemUiState
 import com.example.directclone2.ui.screen.system.update
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -64,14 +66,24 @@ class SettingViewModel (
 
     init {
         viewModelScope.launch {
-            mainUiState = mainUiState.copy(
-                parentSaveDirectoryForBackupFile = repo.getBackupFileDirectory(),
-                appsForBackup = repo.getBackupApps())
             repo.getWorkingProfileIdStream().collect {
                 Log.d(ProfileRepository.TAG, "workingProfileId in viewModel : $it")
                 _workingProfileId.value = it
+                return@collect
             }
         }
+        updateFileName()
+    }
+
+    private fun updateFileName() = viewModelScope.launch {
+        Log.d(TAG, "updateFileName: ${workingProfileId.value}")
+        Log.d(TAG, "updateFileName: ${mainUiState.fileName}")
+        if(mainUiState.fileName.isNotBlank()) return@launch
+        val profileId = workingProfileId.value ?: repo.createProfile()
+        mainUiState = mainUiState.copy(
+            fileName = repo.updateBackupFileInfo(profileId),
+            directoryForBackup = repo.getBackupFileDirectory(),
+            appsForBackup = repo.getBackupApps())
     }
 
     var batteryUiState by mutableStateOf(BatteryUiState())
@@ -187,13 +199,9 @@ class SettingViewModel (
 
     fun save() = viewModelScope.launch {
         val profileId = workingProfileId.value ?: repo.createProfile()
-        val isCompletedCreateBackupFile = repo.createBackupFile(profileId, mainUiState.password)
+        repo.createBackupFile(profileId, mainUiState.password)
         delay(3000)
-        if (isCompletedCreateBackupFile) {
-            mainUiState = mainUiState.copy(isCompletedCreateBackupFile = true)
-        } else {
-            //todo : 화면에 backup 실패 메시지 전송
-        }
+        mainUiState = mainUiState.copy(isCompletedCreateBackupFile = true)
     }
 
     val tabs = MainUiState.TabContent.values()
@@ -221,9 +229,7 @@ class SettingViewModel (
             Log.d(TAG, "profileId in changeAppSelected: $profileId")
             repo.updateBackupApps(profileId, it.appName)
         }
-        mainUiState = mainUiState.copy(
-            appsForBackup = apps
-        )
+        mainUiState = mainUiState.copy(appsForBackup = apps)
     }
 
     fun openBackupResultDialog() {

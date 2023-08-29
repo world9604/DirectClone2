@@ -28,6 +28,10 @@ class FakeProfileRepository: IProfileRepository {
         TODO("Not yet implemented")
     }
 
+    override suspend fun updateBackupFileInfo(id: String): String {
+        TODO("Not yet implemented")
+    }
+
     override suspend fun updateBattery(
         profileId: String,
         smartCharging: String,

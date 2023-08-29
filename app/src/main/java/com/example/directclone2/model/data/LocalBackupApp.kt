@@ -1,5 +1,6 @@
 package com.example.directclone2.model.data
 
+import android.os.Environment
 import com.example.directclone2.ui.screen.main.AppItem
 
 data class LocalBackupApp (
@@ -31,19 +32,19 @@ data class LocalBackupApp (
         ScanSettings(
             packageName = "device.settings.scanner",
             activityName = "device.settings.scanner.ScanSettingsActivity",
-            data = "/data/system/scanner/n5603.reg",
+            data = "/data/system/scanner",
             appName = "ScanSettings",
             isPreInstalledApp = true),
         EmKiosk(
             packageName = "device.apps.emkioskconfig",
             activityName = "device.apps.emkioskconfig.SplashActivity",
-            data = "",
+            data = "/storage/emulated/0/EmKiosk.json",
             appName = "EmKiosk",
             isPreInstalledApp = true),
         Settings(
             packageName = "",
             activityName = "",
-            data = "/storage/emulated/0/",
+            data = "/data/data/com.example.directclone2/databases",
             appName = "Settings",
             isPreInstalledApp = true)
     }
