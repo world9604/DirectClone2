@@ -24,6 +24,7 @@ import com.example.directclone2.ui.screen.display.update
 import com.example.directclone2.ui.screen.locationandsecurity.LocationAndSecurityUiState
 import com.example.directclone2.ui.screen.locationandsecurity.update
 import com.example.directclone2.ui.screen.main.AppItem
+import com.example.directclone2.ui.screen.main.BackupFile
 import com.example.directclone2.ui.screen.main.MainUiState
 import com.example.directclone2.ui.screen.main.update
 import com.example.directclone2.ui.screen.networkandinternet.NetworkAndInternetUiState
@@ -32,12 +33,10 @@ import com.example.directclone2.ui.screen.sound.SoundUiState
 import com.example.directclone2.ui.screen.sound.update
 import com.example.directclone2.ui.screen.system.SystemUiState
 import com.example.directclone2.ui.screen.system.update
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -61,18 +60,36 @@ class SettingViewModel (
     private val _workingProfileId: MutableStateFlow<String?> = MutableStateFlow(null)
     val workingProfileId: StateFlow<String?> = _workingProfileId
 
+    private val _backupFiles: MutableStateFlow<List<BackupFile>> = MutableStateFlow(listOf())
+    val backupFiles: StateFlow<List<BackupFile>> = _backupFiles
+
     var mainUiState by mutableStateOf(MainUiState())
         private set
 
     init {
-        viewModelScope.launch {
-            repo.getWorkingProfileIdStream().collect {
-                Log.d(ProfileRepository.TAG, "workingProfileId in viewModel : $it")
-                _workingProfileId.value = it
-                return@collect
-            }
-        }
+        observeProfileId()
+        observeFiles()
         updateFileName()
+    }
+
+    private fun observeProfileId() = viewModelScope.launch {
+        repo.getWorkingProfileIdStream().collect {
+            Log.d(ProfileRepository.TAG, "collect in getWorkingProfileIdStream() : $it")
+            _workingProfileId.value = it
+            return@collect
+        }
+    }
+
+    private fun observeFiles() = viewModelScope.launch {
+        repo.getFilesStream().collect {
+            it.forEach { file ->
+                Log.d(ProfileRepository.TAG, "collect in getBackupFileNameStream" +
+                        "id : ${file.profileId}, name : ${file.file.name}," +
+                        "date : ${file.createdDate}, password : ${file.password}")
+            }
+            mainUiState = mainUiState.copy(backupFiles = it)
+            return@collect
+        }
     }
 
     private fun updateFileName() = viewModelScope.launch {
@@ -339,5 +356,19 @@ class SettingViewModel (
     fun updateSystemTime(hour: Int, minute: Int, is24hour: Boolean) = viewModelScope.launch {
         val formattedTime = "%02d:%02d".format(hour, minute)
         systemUiState = systemUiState.copy(systemTime = formattedTime)
+    }
+
+    fun checkPassword() {
+        if(mainUiState.passwordForRestoreOrClone.isNotBlank()
+            and (mainUiState.password == mainUiState.passwordForRestoreOrClone)) {
+            mainUiState = mainUiState.copy(isMatchedPassword = true)
+        }
+    }
+
+    fun restore() {
+        mainUiState = mainUiState.copy(isRestoring = true)
+        viewModelScope.launch {
+            repo.restore(mainUiState.selectedId)
+        }
     }
 }

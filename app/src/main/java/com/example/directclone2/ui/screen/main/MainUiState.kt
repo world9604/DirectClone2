@@ -9,6 +9,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.navigation.NavController
 import com.example.directclone2.R
+import com.example.directclone2.model.data.LocalBackupApp
+import com.example.directclone2.model.data.toLocal
 import com.example.directclone2.ui.Screen
 import java.io.File
 import java.text.SimpleDateFormat
@@ -17,6 +19,7 @@ import kotlin.reflect.full.instanceParameter
 import kotlin.reflect.full.memberFunctions
 
 data class MainUiState(
+    val selectedId: String = "",
     val fileName: String = "",
     val backupFiles: List<BackupFile> = listOf(BackupFile(), BackupFile()),
     val appsForBackup: List<AppItem> = listOf(),
@@ -24,11 +27,17 @@ data class MainUiState(
     val directoryForBackup: String = "",
     val usePassword: Boolean = false,
     val password: String = "",
+    val passwordForRestoreOrClone: String = "",
     val confirmPassword: String = "",
     val openBackupDialog: Boolean = false,
     val openSetPasswordDialog: Boolean = false,
     val openBackupResultDialog: Boolean = false,
     val isCompletedCreateBackupFile: Boolean = false,
+    val isMatchedPassword: Boolean = false,
+    val openRestoreDialog: Boolean = false,
+    val openDirectCloneDialog: Boolean = false,
+    val openDeleteDialog: Boolean = false,
+    val isRestoring: Boolean = false
 ) {
     enum class TabContent(val index: Int, @StringRes val textRes: Int) {
         Backup(0, R.string.backup_content_title), Sync(1, R.string.sync_content_title)
@@ -43,6 +52,7 @@ fun <T: Any> MainUiState.update(fieldToBeUpdated: String, value: T): MainUiState
 }
 
 data class BackupFile(
+    val profileId: String = "",
     val file: File = File(""),
     val createdDate: Date = Date(),
     val password: String = "",

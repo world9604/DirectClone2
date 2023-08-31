@@ -8,12 +8,15 @@ import com.example.directclone2.model.data.toExternal
 import com.example.directclone2.model.data.toLocal
 import com.example.directclone2.model.usecase.CreateFileUseCase
 import com.example.directclone2.model.usecase.MakeFileNameUseCase
+import com.example.directclone2.model.usecase.RestoreUseCase
 import com.example.directclone2.ui.screen.main.AppItem
+import com.example.directclone2.ui.screen.main.BackupFile
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import java.util.Calendar
 import java.util.UUID
@@ -79,6 +82,14 @@ class ProfileRepository (
 
     override fun getWorkingProfileIdStream(): Flow<String?> {
         return localDataSource.observeWorkingProfileId()
+    }
+
+    override fun getFilesStream(): Flow<List<BackupFile>> {
+        return localDataSource.observeFiles().map { profiles ->
+            withContext(dispatcher) {
+                profiles.toExternal()
+            }
+        }
     }
 
     override suspend fun updateBattery(profileId: String, smartCharging: String, batteryLowWarningLevel: String,
@@ -228,4 +239,9 @@ class ProfileRepository (
 
     override suspend fun getBackupApps() = LocalBackupApp.AppForBackup.values()
         .map{ it.toLocal().toExternal() }
+
+    override suspend fun restore(id: String) {
+        val profile = getProfile(id) ?: throw Exception("Profile (id : $id) not found")
+        RestoreUseCase(profile)
+    }
 }

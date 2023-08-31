@@ -32,6 +32,9 @@ interface ProfileDao {
     @Query("SELECT id FROM profiles WHERE isFileCreated = 0 LIMIT 1")
     fun observeWorkingProfileId(): Flow<String>
 
+    @Query("SELECT * FROM profiles WHERE isFileCreated = 1")
+    fun observeFiles(): Flow<List<Profile>>
+
     @Query("UPDATE profiles SET isFileCreated = 1 WHERE id = :id")
     suspend fun updateIsCreated(id: String)
 }

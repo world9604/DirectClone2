@@ -44,7 +44,7 @@ fun AppsScreen(
             .padding(top = 16.dp)
             .verticalScroll(rememberScrollState())
     ) {
-         var openAppsCard by remember { mutableStateOf(false) }
+        var openAppsCard by remember { mutableStateOf(false) }
         SecondaryToggleCardInCommonUi(
             modifier = modifier,
             text = "Enable 30 Apps",

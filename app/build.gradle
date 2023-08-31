@@ -42,7 +42,7 @@ android {
 
     defaultConfig {
         applicationId "com.example.directclone2"
-        minSdk 23
+        minSdk 24
         targetSdk 33
         versionCode 1
         versionName "1.0"
@@ -58,9 +58,11 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             signingConfig signingConfigs.pointmobileConfig
+            //signingConfig signingConfigs.androidConfig
         }
         debug {
             signingConfig signingConfigs.pointmobileConfig
+            //signingConfig signingConfigs.androidConfig
         }
     }
     compileOptions {
@@ -123,4 +125,6 @@ dependencies {
     implementation("androidx.room:room-guava:$room_version")
     testImplementation("androidx.room:room-testing:$room_version")
     implementation("androidx.room:room-paging:$room_version")
+
+    implementation "device.lib.enterprise:configurations:0.0.1"
 }

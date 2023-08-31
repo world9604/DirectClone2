@@ -2,6 +2,7 @@ package com.example.directclone2.model
 
 import com.example.directclone2.model.data.Profile
 import com.example.directclone2.ui.screen.main.AppItem
+import com.example.directclone2.ui.screen.main.BackupFile
 import kotlinx.coroutines.flow.Flow
 
 
@@ -136,6 +137,14 @@ class FakeProfileRepository: IProfileRepository {
     }
 
     override suspend fun getBackupApps(): List<AppItem> {
+        TODO("Not yet implemented")
+    }
+
+    override fun getFilesStream(): Flow<List<BackupFile>> {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun restore(id: String) {
         TODO("Not yet implemented")
     }
 }

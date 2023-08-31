@@ -2,6 +2,7 @@ package com.example.directclone2.model
 
 import com.example.directclone2.model.data.Profile
 import com.example.directclone2.ui.screen.main.AppItem
+import com.example.directclone2.ui.screen.main.BackupFile
 import kotlinx.coroutines.flow.Flow
 
 interface IProfileRepository {
@@ -76,4 +77,8 @@ interface IProfileRepository {
     suspend fun updateBackupApps(id: String, appName: String)
 
     suspend fun getBackupApps(): List<AppItem>
+
+    fun getFilesStream(): Flow<List<BackupFile>>
+
+    suspend fun restore(id: String)
 }

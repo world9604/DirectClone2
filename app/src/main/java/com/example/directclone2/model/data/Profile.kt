@@ -4,7 +4,10 @@ package com.example.directclone2.model.data
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.example.directclone2.ui.screen.main.AppItem
+import com.example.directclone2.ui.screen.main.BackupFile
 import com.google.gson.annotations.SerializedName
+import java.io.File
 import java.util.Date
 
 @Entity(tableName = "profiles")
@@ -143,4 +146,13 @@ data class Profile (
     val roaming: String = "",
     @SerializedName("Scan2StageEntity/wiress_config/vpn")
     val vpn: String = "",
+)
+
+fun List<Profile>.toExternal() = map(Profile::toExternal)
+
+fun Profile.toExternal() = BackupFile(
+    profileId = id,
+    file = File(filePath, fileName),
+    createdDate = createdDate,
+    password = password,
 )
