@@ -1,11 +1,14 @@
 package com.example.directclone2.model.usecase
 
 import android.util.Log
-import com.example.directclone2.model.ProfileRepository
-import com.example.directclone2.model.data.Profile
+import com.example.directclone2.model.data.LocalProfile
+import net.lingala.zip4j.ZipFile
+import net.lingala.zip4j.model.ZipParameters
+import net.lingala.zip4j.model.enums.CompressionLevel
+import net.lingala.zip4j.model.enums.CompressionMethod
+import net.lingala.zip4j.model.enums.EncryptionMethod
 import java.io.File
 import java.io.FileInputStream
-import java.io.FileNotFoundException
 import java.io.FileOutputStream
 import java.io.IOException
 import java.io.InputStream
@@ -16,17 +19,23 @@ object CreateFileUseCase {
 
     private const val TAG = "CreateFileUseCase"
 
-    operator fun invoke(profile: Profile): Boolean {
-        profile.backupApps.forEach {
-            try {
-                val source = File(it.data)
-                val target = File("${profile.filePath}${profile.fileName}", source.name)
+    operator fun invoke(localProfile: LocalProfile): Boolean {
+        try {
+            val targetDir = File("${localProfile.filePath}${localProfile.fileName}")
+            localProfile.backupApps.forEach {
+                val source = File(it.sourceDir)
+                val target = File(targetDir, source.name)
                 copyDirectory(source, target)
-            } catch (e: Exception) {
-                Log.e(TAG, "Exception Message : ${e.message}", e)
             }
+            if (targetDir.exists()) {
+                compressZipFile(targetDir, localProfile.password)
+                return true
+            }
+            return false
+        } catch (e: Exception) {
+            Log.e(TAG, "Exception Message : ${e.message}", e)
+            return false
         }
-        return true
     }
 
     @Throws(IOException::class)
@@ -58,5 +67,26 @@ object CreateFileUseCase {
             input.close()
             output.close()
         }
+    }
+
+    private fun compressZipFile(file: File, password: String): File {
+        val zipFile = ZipFile("${file.absolutePath}.zip")
+        val zipParameters = ZipParameters()
+        zipParameters.compressionLevel = CompressionLevel.NORMAL
+        zipParameters.compressionMethod = CompressionMethod.DEFLATE
+
+        if (password.isNotBlank()) {
+            zipFile.setPassword(password.toCharArray())
+            zipParameters.isEncryptFiles = true
+            zipParameters.encryptionMethod = EncryptionMethod.ZIP_STANDARD
+        }
+
+        zipFile.addFolder(file, zipParameters)
+        file.deleteRecursively()
+        return zipFile.file
+        /*
+        mediaScanFile(mBackupFile)
+        mediaScanFile(zipFile.file)
+        */
     }
 }

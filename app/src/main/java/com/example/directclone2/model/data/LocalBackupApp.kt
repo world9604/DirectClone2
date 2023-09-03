@@ -1,68 +1,79 @@
 package com.example.directclone2.model.data
 
-import android.os.Environment
 import com.example.directclone2.ui.screen.main.AppItem
 
 data class LocalBackupApp (
+    val packageName: String,
+    val activityName: String,
+    val sourceDir: String,
+    val appName: String,
+    val isPreInstalledApp: Boolean
+
+    /*
     val app: AppForBackup = AppForBackup.Settings,
+    val packageName: String = app.packageName,
+    val activityName: String = app.activityName,
+    val sourceDir: String = app.sourceDir,
+    val appName: String = app.appName,
+    val isPreInstalledApp: Boolean = app.isPreInstalledApp
+     */
 ) {
+    /*
     val packageName: String = app.packageName
     val activityName: String = app.activityName
-    val data: String = app.data
+    val sourceDir: String = app.sourceDir
     val appName: String = app.appName
     val isPreInstalledApp: Boolean = app.isPreInstalledApp
+    */
 
     enum class AppForBackup(val packageName: String,
                             val activityName: String,
-                            val data: String,
+                            val sourceDir: String,
                             val appName: String,
                             val isPreInstalledApp: Boolean) {
         ProgramButtons(
             packageName = "device.apps.button",
             activityName = "device.apps.button.ProgramButtonsActivity",
-            data = "/data/system/HiJackDBHelper.db",
+            sourceDir = "/data/system/HiJackDBHelper.db",
             appName = "Program Buttons",
             isPreInstalledApp = true),
         Quickstep(
             packageName = "",
             activityName = "",
-            data = "",
+            sourceDir = "",
             appName = "Quickstep",
             isPreInstalledApp = true),
         ScanSettings(
             packageName = "device.settings.scanner",
             activityName = "device.settings.scanner.ScanSettingsActivity",
-            data = "/data/system/scanner",
+            sourceDir = "/data/system/scanner",
             appName = "ScanSettings",
             isPreInstalledApp = true),
         EmKiosk(
             packageName = "device.apps.emkioskconfig",
             activityName = "device.apps.emkioskconfig.SplashActivity",
-            data = "/storage/emulated/0/EmKiosk.json",
+            sourceDir = "/storage/emulated/0/EmKiosk.json",
             appName = "EmKiosk",
             isPreInstalledApp = true),
         Settings(
             packageName = "",
             activityName = "",
-            data = "/data/data/com.example.directclone2/databases",
+            sourceDir = "/data/data/com.example.directclone2/databases",
             appName = "Settings",
             isPreInstalledApp = true)
     }
 }
 
 fun AppItem.toLocal() = LocalBackupApp(
-    app = when(appName) {
-        LocalBackupApp.AppForBackup.ProgramButtons.appName -> LocalBackupApp.AppForBackup.ProgramButtons
-        LocalBackupApp.AppForBackup.Quickstep.appName -> LocalBackupApp.AppForBackup.Quickstep
-        LocalBackupApp.AppForBackup.ScanSettings.appName -> LocalBackupApp.AppForBackup.ScanSettings
-        LocalBackupApp.AppForBackup.Settings.appName -> LocalBackupApp.AppForBackup.Settings
-        LocalBackupApp.AppForBackup.EmKiosk.appName -> LocalBackupApp.AppForBackup.EmKiosk
-        else -> LocalBackupApp.AppForBackup.Settings
-    }
+    packageName = packageName,
+    activityName = activityName,
+    appName = appName,
+    sourceDir = sourceDir,
+    isPreInstalledApp = isPreInstalledApp
 )
 
 @JvmName("externalToLocal")
-fun List<AppItem>.toLocal() = map(AppItem::toLocal)
+fun List<AppItem>.toLocal() = filter{it.selected}.map(AppItem::toLocal)
 
 @JvmName("localToExternal")
 fun List<LocalBackupApp>.toExternal() = map(LocalBackupApp::toExternal)
@@ -70,11 +81,21 @@ fun List<LocalBackupApp>.toExternal() = map(LocalBackupApp::toExternal)
 fun LocalBackupApp.toExternal() = AppItem(
     packageName = packageName,
     activityName = activityName,
+    sourceDir = sourceDir,
     appName = appName,
     isPreInstalledApp = isPreInstalledApp,
 )
 
-fun LocalBackupApp.AppForBackup.toLocal() = LocalBackupApp(app = this)
 
+fun LocalBackupApp.AppForBackup.toLocal() = LocalBackupApp(
+    packageName = packageName,
+    activityName = activityName,
+    sourceDir = sourceDir,
+    appName = appName,
+    isPreInstalledApp = isPreInstalledApp
+)
+
+/*
 @JvmName("appForBackupToExternal")
 fun List<LocalBackupApp.AppForBackup>.toExternal() = map { (it::toLocal as LocalBackupApp)::toExternal }
+ */

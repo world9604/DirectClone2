@@ -7,7 +7,7 @@ import kotlin.reflect.full.instanceParameter
 import kotlin.reflect.full.memberFunctions
 
 data class SystemUiState(
-    val languages: String = "",
+    val languages: String = "American English / en-US",
     val spellChecker: Boolean = false,
     val spellCheckLanguage: String = "when an unknown printer",
     val defaultSpellChecker: DefaultSpellChecker = DefaultSpellChecker.GboardSpellChecker,

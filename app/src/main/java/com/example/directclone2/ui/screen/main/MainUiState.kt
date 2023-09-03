@@ -94,7 +94,8 @@ class AppItem(
     val appName: String,
     val activityName: String = "",
     val packageName: String = "",
+    val sourceDir: String = "",
     val isPreInstalledApp: Boolean = false,
-    val initialSelected: Boolean = false) {
+    private val initialSelected: Boolean = false) {
     var selected: Boolean by mutableStateOf(initialSelected)
 }

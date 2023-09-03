@@ -1,6 +1,6 @@
 package com.example.directclone2.model
 
-import com.example.directclone2.model.data.Profile
+import com.example.directclone2.model.data.LocalProfile
 import com.example.directclone2.ui.screen.main.AppItem
 import com.example.directclone2.ui.screen.main.BackupFile
 import kotlinx.coroutines.flow.Flow
@@ -13,11 +13,11 @@ class FakeProfileRepository: IProfileRepository {
         TODO("Not yet implemented")
     }
 
-    override suspend fun getProfile(id: String): Profile? {
+    override suspend fun getProfile(id: String): LocalProfile? {
         TODO("Not yet implemented")
     }
 
-    override fun getWorkingProfileStream(): Flow<Profile?> {
+    override fun getWorkingProfileStream(): Flow<LocalProfile?> {
         TODO("Not yet implemented")
     }
 
@@ -132,7 +132,7 @@ class FakeProfileRepository: IProfileRepository {
         TODO("Not yet implemented")
     }
 
-    override suspend fun updateBackupApps(id: String, appName: String) {
+    override suspend fun updateBackupApps(id: String, apps: List<AppItem>) {
         TODO("Not yet implemented")
     }
 

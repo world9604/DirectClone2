@@ -1,6 +1,6 @@
 package com.example.directclone2.model
 
-import com.example.directclone2.model.data.Profile
+import com.example.directclone2.model.data.LocalProfile
 import com.example.directclone2.ui.screen.main.AppItem
 import com.example.directclone2.ui.screen.main.BackupFile
 import kotlinx.coroutines.flow.Flow
@@ -9,8 +9,8 @@ interface IProfileRepository {
 
     suspend fun createProfile(): String
 
-    suspend fun getProfile(id: String): Profile?
-    fun getWorkingProfileStream(): Flow<Profile?>
+    suspend fun getProfile(id: String): LocalProfile?
+    fun getWorkingProfileStream(): Flow<LocalProfile?>
     fun getWorkingProfileIdStream(): Flow<String?>
 
     suspend fun getBackupFileDirectory(): String
@@ -74,7 +74,7 @@ interface IProfileRepository {
 
     suspend fun createBackupFile(id: String, password: String): Boolean
 
-    suspend fun updateBackupApps(id: String, appName: String)
+    suspend fun updateBackupApps(id: String, apps: List<AppItem>)
 
     suspend fun getBackupApps(): List<AppItem>
 

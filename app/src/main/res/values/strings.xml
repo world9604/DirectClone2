@@ -512,6 +512,9 @@
     <string name="zh_Hant_MO_language_label">Traditional Chinese (Macao) / zh-Hant-MO</string>
     <string name="zh_Hant_TW_language_label">Traditional Chinese (Taiwan) / zh-Hant-TW</string>
     <string name="zu_ZA_language_label">Zulu (South Africa) / zu-ZA</string>
+    <!-- [End] System > Languages options-->
+
+
     <string name="gboard_spell_checker_label">Gboard spell checker</string>
     <string name="use_network_provided_time_label">Use network-provided time</string>
     <string name="date_label">Date</string>
@@ -576,5 +579,4 @@
     <string name="backup_content_backup_result_dialog_title_label_when_progress">Backup in progress</string>
     <string name="backup_content_backup_result_dialog_sub_title_label_when_progress" />
     <string name="backup_content_backup_result_dialog_btn_text_label_when_progress">CANCEL</string>
-    <!-- [End] System > Languages options-->
 </resources>

@@ -1,6 +1,5 @@
 package com.example.directclone2
 
-import com.example.directclone2.model.ProfileDiskDataSource
 import com.example.directclone2.model.ProfileRepository
 import junit.framework.TestCase.assertEquals
 import org.junit.Test

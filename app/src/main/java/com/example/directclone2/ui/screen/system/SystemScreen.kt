@@ -69,7 +69,6 @@ fun SystemScreen(
                 onClickItem = {vm.updateSystem("languages", it)},
                 currentSelectedItem = vm.systemUiState.languages,
                 arrayRes = R.array.languages_options,
-                //R.array.languages_options
             )
         }
         CardViewInCommonUi(modifier) {

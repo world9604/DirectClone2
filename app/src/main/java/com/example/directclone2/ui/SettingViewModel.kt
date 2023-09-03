@@ -239,13 +239,12 @@ class SettingViewModel (
     }
 
     fun changeAppSelected(item: AppItem, selected: Boolean) = viewModelScope.launch {
+        item.selected = selected
         val apps = mainUiState.appsForBackup.toMutableList()
-        apps.find { it.appName == item.appName }?.let {
-            it.selected = selected
-            val profileId = workingProfileId.value ?: repo.createProfile()
-            Log.d(TAG, "profileId in changeAppSelected: $profileId")
-            repo.updateBackupApps(profileId, it.appName)
-        }
+        apps.add(item)
+        val profileId = workingProfileId.value ?: repo.createProfile()
+        Log.d(TAG, "profileId in changeAppSelected: $profileId")
+        repo.updateBackupApps(profileId, apps)
         mainUiState = mainUiState.copy(appsForBackup = apps)
     }
 

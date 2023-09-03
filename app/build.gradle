@@ -55,7 +55,8 @@ android {
 
     buildTypes {
         release {
-            minifyEnabled false
+            minifyEnabled true
+            shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             signingConfig signingConfigs.pointmobileConfig
             //signingConfig signingConfigs.androidConfig
@@ -125,6 +126,6 @@ dependencies {
     implementation("androidx.room:room-guava:$room_version")
     testImplementation("androidx.room:room-testing:$room_version")
     implementation("androidx.room:room-paging:$room_version")
-
     implementation "device.lib.enterprise:configurations:0.0.1"
+    implementation("net.lingala.zip4j:zip4j:2.11.5")
 }

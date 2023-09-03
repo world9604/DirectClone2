@@ -29,8 +29,12 @@ import androidx.compose.material3.RadioButton
 import androidx.compose.material3.RadioButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -38,6 +42,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
@@ -53,6 +58,7 @@ import com.example.directclone2.ui.components.CardDividerInCommonUi
 import com.example.directclone2.ui.components.CardViewInCommonUi
 import com.example.directclone2.ui.components.CheckBoxInCommonUi
 import com.example.directclone2.ui.components.OutlinedTextFieldInCommonUi
+import kotlinx.coroutines.launch
 import java.util.Locale
 
 
@@ -62,6 +68,8 @@ fun BackupContent(
     vm: SettingViewModel = viewModel(factory = SettingViewModel.Factory),
     onAppClicked: (app: AppItem) -> Unit = {}
 ) {
+    var installedApps by remember { mutableStateOf(listOf<AppItem>()) }
+
     Column(
         modifier = modifier
             .background(MaterialTheme.colorScheme.background)
@@ -71,6 +79,9 @@ fun BackupContent(
         Column {
             var isClickPreInstallAppBtn by rememberSaveable { mutableStateOf(false) }
             var isClickedInstalledAppBtn by rememberSaveable { mutableStateOf(false) }
+            val context = LocalContext.current
+            LaunchedEffect(context){ installedApps = ReadInstalledAppsUseCase(context) }
+
             vm.mainUiState.appsForBackup.filter { it.isPreInstalledApp }?.let {
                 AppsForBackupList(
                     title = "Enterprise Apps and System settings",
@@ -81,7 +92,7 @@ fun BackupContent(
                     vm = vm,
                     onAppClicked = onAppClicked)
             }
-            vm.mainUiState.appsForBackup.filter { !it.isPreInstalledApp }?.let {
+            installedApps.filter { !it.isPreInstalledApp }?.let {
                 AppsForBackupList(
                     title = "installed Apps",
                     subTitle = "(Automatic installation when adding APK file to Direct Clone > Apps)",
@@ -98,7 +109,10 @@ fun BackupContent(
     }
     Box(modifier = Modifier.fillMaxSize()) {
         ButtonInCommonUi(
-            modifier = Modifier.align(Alignment.BottomCenter).fillMaxWidth().padding(16.dp),
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .fillMaxWidth()
+                .padding(16.dp),
             enabled = vm.haveAtLeastOneAppToBackUp(),
             containerColor = MaterialTheme.colorScheme.primary,
             onClick = {
@@ -240,7 +254,9 @@ private fun SetPasswordDialog(vm: SettingViewModel) {
                             text = "CANCEL".uppercase(Locale.getDefault()))
                     }
                     ButtonInCommonUi(
-                        modifier = Modifier.height(48.dp).width(144.dp),
+                        modifier = Modifier
+                            .height(48.dp)
+                            .width(144.dp),
                         enabled = vm.matchPasswordAndConfirmPassword(),
                         containerColor = MaterialTheme.colorScheme.primary,
                         onClick = {
@@ -366,7 +382,9 @@ private fun BackupDialog(vm: SettingViewModel) {
                     }
                 }
                 Row(
-                    modifier = Modifier.fillMaxWidth().padding(),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {

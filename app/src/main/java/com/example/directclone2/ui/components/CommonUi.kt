@@ -10,6 +10,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -70,7 +71,10 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
@@ -86,6 +90,7 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.example.directclone2.ui.Screen
 import com.example.directclone2.ui.screens
+import androidx.compose.foundation.lazy.items
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -511,8 +516,8 @@ fun ExposedDropdownMenuForArrayResInCommonUi(
     @ArrayRes arrayRes: Int = R.array.sample
 ) {
     var expanded by remember { mutableStateOf(false) }
-    val items = stringArrayResource(arrayRes)
-    //var selectedOptionText by remember { mutableStateOf(items[0]) }
+    val options = stringArrayResource(arrayRes)
+    //var selectedOptionText by remember { mutableStateOf(options[0]) }
 
     ExposedDropdownMenuBox (
         modifier = modifier,
@@ -525,8 +530,7 @@ fun ExposedDropdownMenuForArrayResInCommonUi(
                 .border(
                     width = 1.dp,
                     shape = RoundedCornerShape(6.dp),
-                    color = MaterialTheme.colorScheme.tertiary
-                )
+                    color = MaterialTheme.colorScheme.tertiary)
                 .menuAnchor(),
             value = currentSelectedItem,
             onValueChange = {},
@@ -541,50 +545,18 @@ fun ExposedDropdownMenuForArrayResInCommonUi(
                 unfocusedTextColor = MaterialTheme.colorScheme.onPrimary,
                 disabledTextColor = MaterialTheme.colorScheme.onPrimary,
                 errorTextColor = MaterialTheme.colorScheme.onPrimary,
-
                 focusedContainerColor = MaterialTheme.colorScheme.surface,
                 unfocusedContainerColor = MaterialTheme.colorScheme.surface,
                 disabledContainerColor = MaterialTheme.colorScheme.surface,
                 errorContainerColor = MaterialTheme.colorScheme.surface,
-
-                cursorColor = Color.Red,
-                errorCursorColor = Color.Red,
-                selectionColors = TextSelectionColors(handleColor = Color.Red, backgroundColor = Color.Red),
-
                 focusedIndicatorColor = MaterialTheme.colorScheme.surface,
                 unfocusedIndicatorColor = MaterialTheme.colorScheme.surface,
                 disabledIndicatorColor = MaterialTheme.colorScheme.surface,
                 errorIndicatorColor = MaterialTheme.colorScheme.surface,
-
-                focusedLeadingIconColor = Color.Red,
-                unfocusedLeadingIconColor = Color.Red,
-                disabledLeadingIconColor = Color.Red,
-                errorLeadingIconColor = Color.Red,
-
                 focusedTrailingIconColor = MaterialTheme.colorScheme.onTertiary,
                 unfocusedTrailingIconColor = MaterialTheme.colorScheme.onTertiary,
                 disabledTrailingIconColor = MaterialTheme.colorScheme.onTertiary,
-                errorTrailingIconColor = MaterialTheme.colorScheme.onTertiary,
-
-                focusedLabelColor = Color.Red,
-                unfocusedLabelColor = Color.Red,
-                disabledLabelColor = Color.Red,
-                errorLabelColor = Color.Red,
-
-                focusedPlaceholderColor = Color.Red,
-                unfocusedPlaceholderColor = Color.Red,
-                disabledPlaceholderColor = Color.Red,
-                errorPlaceholderColor = Color.Red,
-
-                focusedPrefixColor = Color.Red,
-                unfocusedPrefixColor = Color.Red,
-                disabledPrefixColor = Color.Red,
-                errorPrefixColor = Color.Red,
-
-                focusedSuffixColor = Color.Red,
-                unfocusedSuffixColor = Color.Red,
-                disabledSuffixColor = Color.Red,
-                errorSuffixColor = Color.Red))
+                errorTrailingIconColor = MaterialTheme.colorScheme.onTertiary,))
         ExposedDropdownMenu(
             modifier = Modifier
                 .fillMaxWidth()
@@ -592,7 +564,26 @@ fun ExposedDropdownMenuForArrayResInCommonUi(
             expanded = expanded,
             onDismissRequest = { expanded = false }
         ) {
-            items.forEach { selectionOption ->
+            Box(modifier = Modifier.size(width = 300.dp, height = 300.dp)) {
+                LazyColumn {
+                    items(options) { selectionOption ->
+                        DropdownMenuItem(
+                            text = { Text(
+                                text = selectionOption,
+                                color = MaterialTheme.colorScheme.onPrimary,
+                                style = MaterialTheme.typography.bodyLarge
+                            ) },
+                            onClick = {
+                                //selectedOptionText = selectionOption
+                                onClickItem(selectionOption)
+                                expanded = false
+                            }
+                        )
+                    }
+                }
+            }
+            /*
+            options.forEach { selectionOption ->
                 DropdownMenuItem(
                     text = { Text(
                         text = selectionOption,
@@ -606,6 +597,7 @@ fun ExposedDropdownMenuForArrayResInCommonUi(
                     }
                 )
             }
+             */
         }
     }
 }

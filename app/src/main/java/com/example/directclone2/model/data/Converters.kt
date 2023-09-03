@@ -17,14 +17,14 @@ class Converters {
     }
 
     @TypeConverter
-    fun fromBackupAppList(value: List<LocalBackupApp>): String {
+    fun fromBackupApps(value: List<LocalBackupApp>): String {
         val gson = Gson()
         val type = object : TypeToken<List<LocalBackupApp>>() {}.type
         return gson.toJson(value, type)
     }
 
     @TypeConverter
-    fun toBackupAppList(value: String): List<LocalBackupApp> {
+    fun toBackupApps(value: String): List<LocalBackupApp> {
         val gson = Gson()
         val type = object : TypeToken<List<LocalBackupApp>>() {}.type
         return gson.fromJson(value, type)

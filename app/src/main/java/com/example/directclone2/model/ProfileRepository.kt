@@ -2,7 +2,7 @@ package com.example.directclone2.model
 
 import android.os.Environment
 import com.example.directclone2.model.data.LocalBackupApp
-import com.example.directclone2.model.data.Profile
+import com.example.directclone2.model.data.LocalProfile
 import com.example.directclone2.model.data.ProfileDao
 import com.example.directclone2.model.data.toExternal
 import com.example.directclone2.model.data.toLocal
@@ -29,7 +29,8 @@ class ProfileRepository (
     //private val scope: CoroutineScope,
 ): IProfileRepository {
 
-    private val PREFIX_STORAGE = "${Environment.getExternalStorageDirectory()}/DirectClone/"
+    private val backupDir = "${Environment.getExternalStorageDirectory()}/DirectClone/Backup/"
+    private val installAppsBackupDir = "${Environment.getExternalStorageDirectory()}/DirectClone/Apps/"
 
     companion object {
         const val TAG = "ProfileRepository"
@@ -52,11 +53,11 @@ class ProfileRepository (
         val profileId = withContext(dispatcher) {
             UUID.randomUUID().toString()
         }
-        localDataSource.insert(Profile(id = profileId))
+        localDataSource.insert(LocalProfile(id = profileId))
         return profileId
     }
 
-    override suspend fun getBackupFileDirectory() = PREFIX_STORAGE
+    override suspend fun getBackupFileDirectory() = backupDir
 
     override suspend fun updateBackupFileInfo(id: String): String {
         val now = Calendar.getInstance().time
@@ -64,7 +65,7 @@ class ProfileRepository (
         withContext(dispatcher) {
             val profile = getProfile(id)?.copy(
                 fileName = fileName,
-                filePath = PREFIX_STORAGE,
+                filePath = backupDir,
                 createdDate = now
             ) ?: throw Exception("Profile (id : $id) not found")
             localDataSource.update(profile)
@@ -72,11 +73,11 @@ class ProfileRepository (
         return fileName
     }
 
-    override suspend fun getProfile(id: String): Profile? {
+    override suspend fun getProfile(id: String): LocalProfile? {
         return localDataSource.getProfile(id)
     }
 
-    override fun getWorkingProfileStream(): Flow<Profile?> {
+    override fun getWorkingProfileStream(): Flow<LocalProfile?> {
         return localDataSource.observeNotCreatedFile()
     }
 
@@ -227,13 +228,9 @@ class ProfileRepository (
         }
     }
 
-    override suspend fun updateBackupApps(id: String, appName: String) {
+    override suspend fun updateBackupApps(id: String, apps: List<AppItem>) {
         val profile = getProfile(id) ?: throw Exception("Profile (id : $id) not found")
-        val backupApps = profile.backupApps
-        val mutableBackupApps = backupApps.toMutableList()
-        val backupApp = AppItem(appName = appName).toLocal()
-        mutableBackupApps.add(backupApp)
-        val updatedProfile = profile.copy(backupApps = mutableBackupApps)
+        val updatedProfile = profile.copy(backupApps = apps.toLocal())
         localDataSource.update(updatedProfile)
     }
 
